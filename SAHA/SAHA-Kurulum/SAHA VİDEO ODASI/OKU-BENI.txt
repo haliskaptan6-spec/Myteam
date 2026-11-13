@@ -1,0 +1,58 @@
+SAHA VİDEO ODASI - KURULUM (yaklaşık 20 dakika)
+=================================================
+Paketin içinde:
+  site\index.html         -> sporcuların girdiği site (tek dosya)
+  fonksiyon\index.ts      -> videoyu imzalayan ve davet linki üreten küçük sunucu kodu
+  2-sql-yama.sql          -> veritabanına küçük ekleme
+
+GİZLİ ANAHTARLARI (Bunny Token anahtarı, Supabase "secret/service_role" anahtarı,
+veritabanı şifresi) ASLA kimseye yazma, bana da sohbette yapıştırma.
+Aşağıda sadece Supabase'in kendi "Secrets" kutusuna yazacaksın.
+
+ADIM 1 - SQL yaması
+  Supabase > SQL Editor > New query > 2-sql-yama.sql dosyasının içini yapıştır > Run.
+  "Success" yazmalı.
+
+ADIM 2 - Kayıt kapısını kapat
+  Supabase > Authentication > Sign In / Providers (veya Providers) > Email
+  "Allow new users to sign up" (Enable sign ups) KAPALI olsun. Kaydet.
+  (Davet linkleri yine çalışır, dışarıdan kimse hesap açamaz.)
+
+ADIM 3 - Link süresi
+  Authentication > Providers > Email > "Email OTP Expiration" = 86400 (24 saat, en yüksek değer).
+
+ADIM 4 - Fonksiyonu ekle
+  Supabase > Edge Functions > Deploy a new function > "Via Editor".
+  Adı tam olarak:  saha-api
+  Editördeki her şeyi sil, fonksiyon\index.ts içeriğini yapıştır > Deploy.
+  Sonra fonksiyonun Settings kısmında "Verify JWT" (JWT doğrulama) KAPALI olsun. Kaydet.
+  (Kontrolü kodun içinde kendimiz yapıyoruz.)
+
+ADIM 5 - Secrets (Edge Functions > Secrets > Add)
+  BUNNY_TOKEN_KEY   = Bunny > Library > Security > "Token Authentication Key"
+  BUNNY_LIBRARY_ID  = 776569
+  SITE_URL          = sitenin adresi (6. adımdan sonra, sonunda / olmadan)
+  SUPABASE_URL ve service anahtarı otomatik gelir, eklemene gerek yok.
+
+ADIM 6 - Siteyi yayınla (ücretsiz)
+  Netlify Drop: app.netlify.com/drop sayfasına "site" klasörünü sürükle.
+  Sana bir adres verir (https://...netlify.app). Bu adresi 5. adımdaki SITE_URL'ye yaz
+  (Secrets'ta kaydedince fonksiyon yeniden başlar; gerekirse fonksiyonu tekrar Deploy et).
+
+ADIM 7 - Bunny'de izinli alan
+  Bunny > Library > Security > Allowed Domains: sitenin adresini ekle
+  (https:// olmadan, örn. xxx.netlify.app). "Block direct URL file access" açık kalsın.
+
+ADIM 8 - İlk deneme
+  Siteye gir, kendi admin hesabınla giriş yap.
+  Videolar sekmesi > Bunny'deki videonun "Video ID" değerini yapıştır, başlık yaz, ekle.
+  Sporcular sekmesi > ad ve e-posta yaz > "Davet bağlantısı oluştur".
+  Linki WhatsApp ile gönder. Sporcu linke girer, şifresini belirler ve girer.
+
+NOTLAR
+  - Davet linki tek kullanımlıktır ve 24 saat geçerlidir. Süresi dolarsa
+    Sporcular listesinden yeni link üret.
+  - Sporcu şifresini unutursa aynı yerden "Şifre sıfırlama linki" üret.
+  - Sitedeki onay kutusu metni genel bir metindir. 18 yaş altı sporcular için
+    resmi veli onayı/KVKK metnini kulüpten veya bir avukattan al.
+  - Videoyu siteden silmek Bunny'deki dosyayı silmez, orada ayrıca silersin.

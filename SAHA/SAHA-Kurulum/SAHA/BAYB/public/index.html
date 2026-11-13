@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="BAYB Streamer - Professional Video Streaming & Capture Tool for Volleyball Analysis">
+    <title>BAYB Streamer — Video Capture & Stream</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app">
+        <!-- ═══ HEADER ═══ -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M23 7l-7 5 7 5V7z"/>
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                        </svg>
+                    </div>
+                    <span class="logo-text">BAYB Streamer</span>
+                </div>
+            </div>
+            <div class="header-center">
+                <div class="status-badge" id="statusBadge">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Hazır</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="header-btn" id="themeBtn" title="Tema">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- ═══ MAIN CONTENT ═══ -->
+        <main class="app-main">
+            <!-- VIDEO PREVIEW -->
+            <div class="video-container" id="videoContainer">
+                <video id="videoPreview" autoplay muted playsinline></video>
+                <div class="video-overlay" id="videoOverlay">
+                    <div class="overlay-content">
+                        <div class="camera-icon-wrapper">
+                            <svg class="camera-icon" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M23 7l-7 5 7 5V7z"/>
+                                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                            </svg>
+                        </div>
+                        <h2>Yayını Başlatın</h2>
+                        <p>Cihazınızı seçin ve <strong>Başlat</strong>'a tıklayarak<br>yayını başlatın.</p>
+                    </div>
+                </div>
+                <div class="live-badge hidden" id="liveBadge">
+                    <span class="live-dot"></span>
+                    CANLI
+                </div>
+                <div class="res-badge hidden" id="resBadge">1080p</div>
+                <!-- Fullscreen toggle -->
+                <button class="fs-btn" id="fullscreenBtn" title="Tam ekran">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+                        <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- ═══ CONTROLS AREA ═══ -->
+            <div class="controls-area">
+                <!-- TABS -->
+                <div class="tab-bar">
+                    <button class="tab active" data-tab="local" id="tabLocal">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                            <line x1="8" y1="21" x2="16" y2="21"/>
+                            <line x1="12" y1="17" x2="12" y2="21"/>
+                        </svg>
+                        Yerel Cihaz
+                    </button>
+                    <button class="tab" data-tab="network" id="tabNetwork">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="2" y1="12" x2="22" y2="12"/>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                        </svg>
+                        Ağ Yayını
+                    </button>
+                </div>
+
+                <!-- ═══ TAB 1: LOCAL DEVICE ═══ -->
+                <div class="tab-content active" id="tabContentLocal">
+                    <div class="panels-grid">
+                        <!-- LEFT PANEL: SETUP -->
+                        <div class="panel">
+                            <div class="panel-header">
+                                <span class="panel-number">1</span>
+                                <h3>Kurulum</h3>
+                            </div>
+                            <div class="panel-body">
+                                <label class="field-label">
+                                    Cihaz
+                                    <span class="info-icon" title="Bilgisayara bağlı capture kartınızı veya kameranızı seçin">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                    </span>
+                                </label>
+
+                                <!-- Device Select -->
+                                <div class="select-wrapper">
+                                    <select id="deviceSelect">
+                                        <option value="">Cihaz seçin...</option>
+                                    </select>
+                                    <button class="refresh-btn" id="refreshDevices" title="Cihazları yenile">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+                                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <!-- Resolution -->
+                                <label class="field-label" style="margin-top: 12px;">Çözünürlük</label>
+                                <div class="select-wrapper">
+                                    <select id="resolutionSelect">
+                                        <option value="1920x1080">1920 × 1080 (Full HD)</option>
+                                        <option value="1280x720">1280 × 720 (HD)</option>
+                                        <option value="854x480">854 × 480 (SD)</option>
+                                        <option value="640x480">640 × 480</option>
+                                    </select>
+                                </div>
+
+                                <!-- FPS -->
+                                <label class="field-label" style="margin-top: 12px;">Frame Rate</label>
+                                <div class="select-wrapper">
+                                    <select id="fpsSelect">
+                                        <option value="30">30 FPS</option>
+                                        <option value="25">25 FPS</option>
+                                        <option value="60">60 FPS</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT PANEL: STREAM & RECORD -->
+                        <div class="panel">
+                            <div class="panel-header">
+                                <span class="panel-number">2</span>
+                                <h3>Yayın ve Kayıt</h3>
+                            </div>
+                            <div class="panel-body">
+                                <label class="field-label">Bağlantı</label>
+                                <div class="toggle-group single">
+                                    <button class="toggle-btn active">m3u8</button>
+                                    <button class="toggle-btn" disabled title="Yakında">RTSP</button>
+                                </div>
+
+                                <!-- Stream URL -->
+                                <div class="url-display" id="streamUrlGroup">
+                                    <input type="text" id="streamUrl" class="text-input url-input" readonly placeholder="Yayın başlatıldığında URL burada görünecek">
+                                    <div class="url-actions">
+                                        <button class="icon-btn" id="copyUrlBtn" title="URL'yi kopyala">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                                        </button>
+                                        <button class="icon-btn" id="openUrlBtn" title="Tarayıcıda aç">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Start / Stop Button -->
+                                <button class="action-btn start-btn" id="startBtn">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                        <polygon points="5 3 19 12 5 21 5 3"/>
+                                    </svg>
+                                    Başlat
+                                </button>
+
+                                <!-- QR Code -->
+                                <div class="qr-section">
+                                    <label class="field-label">Mobil Erişim</label>
+                                    <div class="qr-container" id="qrContainer">
+                                        <canvas id="qrCanvas"></canvas>
+                                        <p class="qr-hint">Yayın başladığında QR kodu<br>burada görünecek</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ TAB 2: NETWORK STREAM ═══ -->
+                <div class="tab-content" id="tabContentNetwork">
+                    <div class="panels-grid">
+                        <!-- LEFT: YOUR STREAM INFO -->
+                        <div class="panel">
+                            <div class="panel-header">
+                                <span class="panel-number purple">1</span>
+                                <h3>Bu Bilgisayarın Yayını</h3>
+                            </div>
+                            <div class="panel-body">
+                                <label class="field-label">Ağ Bilgileri</label>
+                                <div class="info-card" id="networkInfoCard">
+                                    <div class="info-row">
+                                        <span class="info-label">IP Adresi</span>
+                                        <span class="info-value highlight" id="localIp">Algılanıyor...</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">Yayın Portu</span>
+                                        <span class="info-value" id="portNum">3000</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">Durum</span>
+                                        <span class="info-value" id="netStreamStatus">
+                                            <span class="status-indicator offline"></span> Yayın yok
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <label class="field-label" style="margin-top: 16px;">Yayın Adresi</label>
+                                <div class="url-display">
+                                    <input type="text" id="networkStreamUrl" class="text-input url-input" readonly placeholder="Yayın başlatıldığında görünecek">
+                                    <div class="url-actions">
+                                        <button class="icon-btn" id="copyNetUrlBtn" title="Kopyala">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="qr-section">
+                                    <label class="field-label">Diğer Cihazlardan Erişim</label>
+                                    <div class="qr-container" id="networkQrContainer">
+                                        <canvas id="networkQrCanvas"></canvas>
+                                        <p class="qr-hint">QR kodu taratarak<br>mobil cihazdan izleyin</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT: CONNECT TO REMOTE -->
+                        <div class="panel">
+                            <div class="panel-header">
+                                <span class="panel-number purple">2</span>
+                                <h3>Uzak Cihaza Bağlan</h3>
+                            </div>
+                            <div class="panel-body">
+                                <label class="field-label">Uzak Yayın URL'si</label>
+                                <p class="field-description">Aynı WiFi ağındaki başka bir BAYB Streamer cihazının m3u8 yayın URL'sini girin.</p>
+
+                                <div class="input-group">
+                                    <input type="text" id="remoteStreamUrl" class="text-input" placeholder="http://192.168.1.x:3000/stream/stream.m3u8">
+                                </div>
+
+                                <button class="action-btn connect-btn" id="connectRemoteBtn">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                                    Bağlan
+                                </button>
+
+                                <!-- Remote video preview -->
+                                <div class="remote-preview">
+                                    <label class="field-label" style="margin-top: 20px;">Uzak Yayın Önizleme</label>
+                                    <div class="remote-video-wrapper">
+                                        <video id="remoteVideo" autoplay muted playsinline></video>
+                                        <div class="remote-overlay" id="remoteOverlay">
+                                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.35">
+                                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                                                <line x1="8" y1="21" x2="16" y2="21"/>
+                                                <line x1="12" y1="17" x2="12" y2="21"/>
+                                            </svg>
+                                            <span>Bağlantı bekleniyor...</span>
+                                        </div>
+                                    </div>
+                                    <button class="action-btn disconnect-btn hidden" id="disconnectRemoteBtn">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                        Bağlantıyı Kes
+                                    </button>
+                                </div>
+
+                                <!-- Instructions -->
+                                <div class="instructions-card">
+                                    <h4>
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                        Nasıl Bağlanılır?
+                                    </h4>
+                                    <ol>
+                                        <li>Her iki cihaz aynı WiFi ağına bağlı olmalı</li>
+                                        <li>Kaynak cihazda BAYB Streamer çalıştırıp yayını başlatın</li>
+                                        <li>m3u8 URL'sini kopyalayıp yukarıya yapıştırın</li>
+                                        <li><strong>Bağlan</strong>'a tıklayın</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- ═══ TOAST ═══ -->
+        <div class="toast hidden" id="toast">
+            <span class="toast-icon" id="toastIcon">✓</span>
+            <span class="toast-message" id="toastMessage"></span>
+        </div>
+    </div>
+
+    <!-- HLS.js -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.7/dist/hls.min.js"></script>
+    <!-- QRCode -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <!-- App -->
+    <script src="js/app.js"></script>
+</body>
+</html>

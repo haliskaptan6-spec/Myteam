@@ -1,0 +1,44 @@
+SAHA YAYIN - KURULUM (Windows)
+
+Bu program kameradan aldigi goruntuyu ayni Wi-Fi'deki tablete yayinlar ve maci kaydeder.
+SAHA uygulamasindaki VIDEO CAPTURE sekmesi bu programla konusur.
+
+BIR KERELIK KURULUM
+1) Python 3 kur: https://www.python.org/downloads/
+   Kurarken ilk ekranda "Add python.exe to PATH" kutusunu isaretle.
+2) ffmpeg indir: https://www.gyan.dev/ffmpeg/builds/  ("release essentials" zip)
+   Zip'in icindeki bin klasorunden ffmpeg.exe dosyasini al ve
+   saha-yayin.py dosyasinin yanina koy.
+3) Su uc dosya ayni klasorde olsun:
+   saha-yayin.py, saha-yayin-baslat.bat, ffmpeg.exe
+
+HER MAC ICIN
+1) saha-yayin-baslat.bat dosyasina cift tikla. Siyah bir pencere acilir, acik kalsin.
+   Windows guvenlik duvari sorarsa "Ozel aglar"a izin ver.
+2) Yakalama kartini bilgisayara tak (veya IP kameranin aglaa bagli oldugunu kontrol et).
+3) Bilgisayardaki saha.html dosyasini Chrome ile ac -> VIDEO CAPTURE -> Kameradan video al.
+4) CAPTURE CARD veya IP CAMERA sec, yayini baslat.
+5) Tabletin kamerasiyla ekrandaki QR kodu okut. Tablet ayni Wi-Fi'de olmali.
+   Tablette istedigin kadar geri/ileri alabilir, "Canli" ile tekrar canliya donebilirsin.
+
+KAYITLAR
+Yayin sirasinda goruntu SAHA-Kayitlar klasorune yazilir.
+Yayini durdurunca kayit.mp4 dosyasi olusur (Data Volley / VolleyStation'a aktarmak icin).
+
+NOTLAR
+- Yakalama karti ayni anda tek programda acik olabilir. Data Volley, OBS veya VS Streamer acikken SAHA kullanamaz.
+- Wi-Fi degisirse QR kendiliginden yenilenir. Yenilenmezse "QR'i yenile"ye bas.
+- Yayini SAHA kapansa bile bu program surdurur. Bitirmek icin SAHA'da "Yayini durdur"a bas, sonra siyah pencerede Ctrl+C.
+
+CONVERT (VIDEO BIRLESTIR / KUCULT)
+SAHA'daki sol menuden CONVERT'i sec. Ayni program (saha-yayin-baslat.bat) acik olmali.
+1) "Video ekle" ile bilgisayarindaki videolari sec. Siralarini oklarla degistir.
+2) Yontem:
+   - Sadece birlestir: dosyalar ayni bicimdeyse kalite kaybi olmadan cok hizli birlestirir.
+     Bicimleri farkliysa kendisi yuksek kalitede yeniden kodlar.
+   - Kucult: kaliteyi (Yuksek / Dengeli / Kucuk) ya da hedef boyutu (GB) sec.
+     Istersen cozunurlugu 1080p/720p/480p'ye, kare hizini 30 fps'e dusur.
+3) Baslat'a bas. Ilerleme, kalan sure ve sonuc (ornegin 12,4 GB -> 3,1 GB) altta gorunur.
+   Cikti varsayilan olarak ilk dosyanin yanina kaydedilir. Ayni isimde dosya varsa ustune yazilmaz.
+Not: Kucultme isleri islemciyi yorar ve buyuk dosyalarda saatler surebilir. Islemi iptal edebilirsin.
+ffprobe.exe (ffmpeg ile birlikte gelir) ffmpeg.exe'nin yanindaysa dosya bilgileri daha guvenilir okunur.

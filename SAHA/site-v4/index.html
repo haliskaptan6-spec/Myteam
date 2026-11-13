@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>SAHA Video Odası</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#f2f4f6;--panel:#fff;--ink:#12202c;--mute:#5d6b78;--line:#d9dfe5;--accent:#1c4fd6;--accent-ink:#fff;--accent-bg:#e4ecfd;--signal:#d9480f;--ok:#16794a;--ok-bg:#dff3e8;--warn-bg:#fdecd8;--warn:#9a5200;--bad:#b3261e;--seq:#2a78d6;--none:#cdd5dc;--display:"Barlow Condensed","Arial Narrow",sans-serif;--body:"Barlow",system-ui,sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0e161d;--panel:#16212b;--ink:#e8eef3;--mute:#92a1ae;--line:#26343f;--accent:#6c97ff;--accent-ink:#0b1220;--accent-bg:#1b2a4a;--signal:#ff8a4c;--ok:#5fd39b;--ok-bg:#12372a;--warn-bg:#3a2a12;--warn:#f0b36a;--bad:#ff8f86;--seq:#3987e5;--none:#33434f;color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:0 40px}
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:.02em;margin:0;text-wrap:balance;line-height:1.1}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+.wrap{max-width:1040px;margin-inline:auto}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:26px;font-weight:700;letter-spacing:.14em;line-height:1.05}
+.brand i{width:30px;height:30px;border-radius:50%;border:3px solid var(--accent);position:relative;display:inline-block;flex:none}
+.brand i::before,.brand i::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid var(--accent);transform:rotate(60deg) scaleX(.45)}
+.brand i::after{transform:rotate(-60deg) scaleX(.45)}
+.brand small{display:block;font-family:var(--body);font-size:12px;letter-spacing:.12em;color:var(--mute);font-weight:500}
+.auth{display:grid;grid-template-columns:1.1fr 1fr;min-height:540px;margin-top:24px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel)}
+.auth-side{padding:32px;background:linear-gradient(160deg,#1c4fd6,#122f80);color:#fff;display:flex;flex-direction:column;justify-content:space-between;gap:24px;position:relative;overflow:hidden}
+.auth-side .brand,.auth-side .brand small{color:#fff}
+.auth-side .brand i,.auth-side .brand i::before,.auth-side .brand i::after{border-color:#fff}
+.auth-side h2{font-size:42px;color:#fff;max-width:11ch}
+.auth-side p{max-width:34ch;color:#e6eeff;margin:10px 0 0}
+.court{position:absolute;right:-60px;bottom:-40px;width:300px;height:200px;border:2px solid rgba(255,255,255,.28);transform:rotate(-12deg)}
+.court::before{content:"";position:absolute;left:33%;top:0;bottom:0;border-left:2px solid rgba(255,255,255,.28)}
+.court::after{content:"";position:absolute;left:0;right:0;top:50%;border-top:2px solid rgba(255,255,255,.28)}
+.auth-main{padding:32px;display:flex;flex-direction:column;justify-content:center;gap:16px}
+.auth-main h2{font-size:30px}
+.lead{color:var(--mute);margin:0}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;font-weight:600}
+.field input,.field select,.field textarea{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:11px 12px;width:100%}
+.field input[readonly]{opacity:.75}
+.pw{position:relative}
+.pw button{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--accent);font-size:13px;font-weight:600;padding:6px 8px}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;padding:12px 18px;font-weight:600}
+.btn.alt{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.btn.sm{padding:7px 12px;font-size:13px}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.link{background:none;border:0;color:var(--accent);padding:0;font-weight:600;text-align:left}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.sp{justify-content:space-between}
+.note{font-size:13px;color:var(--mute)}
+.err{color:var(--bad);font-size:13px;min-height:18px}
+.meter{display:flex;gap:4px}.meter span{flex:1;height:5px;border-radius:3px;background:var(--line)}.meter span.on{background:var(--ok)}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--mute)}.chk input{margin-top:3px;width:auto}
+.inv{background:var(--accent-bg);border-radius:10px;padding:12px 14px;font-size:14px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px;flex-wrap:wrap}
+.who{display:flex;align-items:center;gap:10px;font-size:14px}
+.av{width:34px;height:34px;border-radius:50%;background:var(--accent-bg);color:var(--accent);display:grid;place-items:center;font-weight:700}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 16px}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 14px;font-size:14px}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.vc{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;text-align:left;padding:0;display:flex;flex-direction:column}
+.vc:hover{border-color:var(--accent)}
+.th{aspect-ratio:16/9;background:linear-gradient(135deg,#223647,#0f1b26);position:relative;display:grid;place-items:center;color:#fff}
+.th::before{content:"";position:absolute;inset:14% 12%;border:1.5px solid rgba(255,255,255,.18)}
+.th::after{content:"";position:absolute;left:12%;right:12%;top:50%;border-top:1.5px solid rgba(255,255,255,.18)}
+.th .pl{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.92);color:#12202c;display:grid;place-items:center;z-index:1;font-size:16px;padding-left:3px}
+.th .new{position:absolute;left:8px;top:8px;background:var(--signal);color:#fff;border-radius:4px;padding:1px 7px;font-size:11px;font-weight:700;letter-spacing:.06em;z-index:1}
+.vb{padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px}.vb b{font-weight:600}.vb span{font-size:13px;color:var(--mute)}
+.bar{height:4px;background:var(--line);border-radius:2px;margin-top:6px}.bar i{display:block;height:100%;background:var(--accent);border-radius:2px}
+.player{aspect-ratio:16/9;max-width:100%;background:#0b131a;border-radius:12px;overflow:hidden;position:relative}
+.player iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.two{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:20px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.msg{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:8px;background:var(--panel)}
+.msg.mine{border-color:var(--acc,#6b8cff)}
+.msg .mh{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:13px}
+.msg .mb{white-space:pre-wrap;margin-top:4px;font-size:15px}
+.badge{display:inline-block;min-width:18px;padding:0 6px;border-radius:999px;background:#e5484d;color:#fff;font-size:12px;font-weight:700;text-align:center;margin-left:6px}
+.thr{width:100%;text-align:left;display:block;margin-top:8px}
+#msgs{max-height:340px;overflow:auto}
+.hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:10px}
+.hgrid figure{margin:0}
+.hgrid figcaption{margin-top:4px;font-size:12px;white-space:pre-wrap}
+.heat{width:100%;height:auto;border-radius:8px;display:block;cursor:zoom-in}
+.tags{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.tag{display:flex;gap:12px;background:none;border:0;text-align:left;padding:8px;border-radius:8px;align-items:baseline}
+.tag:hover{background:var(--accent-bg)}
+.tag time{font-variant-numeric:tabular-nums;color:var(--accent);font-weight:600;min-width:52px}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:18px;flex-wrap:wrap}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:10px 12px;font-weight:600;color:var(--mute)}
+.tabs button.on{color:var(--accent);border-color:var(--accent)}
+.form2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.form2 .full{grid-column:1/-1}
+.ath{display:grid;grid-template-columns:1.4fr 1fr auto;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.ath:first-of-type{border-top:0}
+.pill{font-size:12px;font-weight:600;border-radius:999px;padding:2px 10px;display:inline-block}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}.pill.wait{background:var(--warn-bg);color:var(--warn)}
+.linkbox{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-top:8px}
+.linkbox code{flex:1;min-width:0;overflow-wrap:anywhere;font-size:13px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:9px 10px;border-top:1px solid var(--line)}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);border-top:0}
+.scroll{overflow-x:auto}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:14px;z-index:20;max-width:92vw}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.tile b{display:block;font-family:var(--display);font-size:38px;line-height:1;font-variant-numeric:tabular-nums}.tile span{color:var(--mute);font-size:13px}
+.lg{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--mute);margin:8px 0 14px}
+.lg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.vr{display:grid;grid-template-columns:minmax(120px,220px) minmax(0,1fr) 170px;gap:14px;align-items:center;padding:7px 0}
+.stack{display:flex;gap:2px;height:16px}.stack span{display:block;height:100%}
+.stack span:first-child{border-radius:4px 0 0 4px}.stack span:last-child{border-radius:0 4px 4px 0}
+.vr .num{font-size:13px;color:var(--mute);font-variant-numeric:tabular-nums}
+.hm{border-collapse:separate;border-spacing:2px;width:auto;min-width:100%}
+.hm th{font-size:11px;text-transform:none;letter-spacing:.03em;color:var(--mute);text-align:center;padding:4px 2px;border:0;max-width:78px;font-weight:600}
+.hm td{border:0;padding:0}
+.hm td.c{height:36px;min-width:56px;text-align:center;border-radius:5px;font-size:13px;font-variant-numeric:tabular-nums;font-weight:600}
+.hm td.c.z{background:var(--none);color:var(--mute);font-weight:400}
+.hm td.nm{padding:0 10px 0 0;white-space:nowrap;font-size:14px}
+.hm td.av2{padding-left:10px;white-space:nowrap;font-size:14px}
+.tip{position:fixed;z-index:30;background:var(--ink);color:var(--bg);padding:6px 10px;border-radius:6px;font-size:13px;pointer-events:none;max-width:260px}
+.vlist{display:flex;flex-direction:column}
+.vi{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.vi:first-child{border-top:0}
+.acc{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px 16px;background:var(--bg);border-radius:8px;padding:10px 12px}
+.acc label{display:flex;gap:6px;align-items:center;font-size:14px}
+@media(max-width:760px){.auth{grid-template-columns:1fr}.auth-side{min-height:220px}.auth-side h2{font-size:32px}.two{grid-template-columns:1fr}.form2{grid-template-columns:1fr}.ath{grid-template-columns:1fr}.vr{grid-template-columns:1fr}.vi{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><p class="note" style="padding-top:40px">Yükleniyor...</p></div>
+<div class="toast" id="toast" hidden></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://assets.mediadelivery.net/playerjs/player-0.1.0.min.js"></script>
+<script>
+/* ---- Ayarlar (herkese açık bilgiler) ---- */
+var CFG={url:"https://edwwbrrdyiejxvgbyued.supabase.co",key:"sb_publishable_kuZTPoYEkzvKnyK51AG4VQ_-cCqBALp",fn:"saha-api"};
+var BUCKET=5; /* saniye: izlenme ölçümü 5 sn'lik dilimlerle yapılır */
+var CATS=["Maç","Antrenman","Bireysel","Rakip analizi"];
+
+var sb=null,S={view:"loading",user:null,prof:null,f:"Tümü",tab:"videos",open:null,tok:null,adm:{},msg:""};
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function toast(m){var t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(function(){t.hidden=true},2800)}
+function copy(txt){try{navigator.clipboard.writeText(txt).then(function(){toast("Kopyalandı")},function(){toast("Kopyalanamadı, metni seçip kopyala")})}catch(x){toast("Kopyalanamadı, metni seçip kopyala")}}
+function trErr(e){var m=(e&&e.message)||String(e||"");
+if(/Invalid login credentials/i.test(m))return "E-posta veya şifre hatalı.";
+if(/Email not confirmed/i.test(m))return "E-posta henüz onaylanmamış. Antrenörün yeni bir bağlantı göndermeli.";
+if(/Failed to fetch|NetworkError/i.test(m))return "Bağlantı kurulamadı. İnternetini kontrol edip tekrar dene.";
+if(/expired|invalid|otp/i.test(m))return "Bağlantının süresi dolmuş veya daha önce kullanılmış. Antrenöründen yeni bağlantı iste.";
+if(/same password|different from the old/i.test(m))return "Yeni şifre eskisinden farklı olmalı.";
+if(/Password should be|weak/i.test(m))return "Şifre çok kolay tahmin edilebilir. Daha uzun ve farklı bir şifre dene.";
+return m||"Bir şey ters gitti."}
+function brand(){return '<div class="brand"><i></i><div>SAHA<small>VİDEO ODASI</small></div></div>'}
+function fmtT(s){s=Math.max(0,Math.round(s));var h=Math.floor(s/3600),m=Math.floor(s%3600/60),c=s%60;return (h?h+":"+("0"+m).slice(-2):m)+":"+("0"+c).slice(-2)}
+function parseT(t){var p=t.split(":").map(Number);return p.length===3?p[0]*3600+p[1]*60+p[2]:p[0]*60+p[1]}
+function strength(p){var n=0;if(p.length>=8)n++;if(/[a-zçğıöşü]/.test(p)&&/[A-ZÇĞİÖŞÜ]/.test(p))n++;if(/\d/.test(p))n++;if(/[^\w]/.test(p)||p.length>=12)n++;return n}
+async function api(action,body){
+var r=await sb.functions.invoke(CFG.fn,{body:Object.assign({action:action},body||{})});
+if(r.error){var m=r.error.message;try{var j=await r.error.context.json();m=j.error||m}catch(x){}throw new Error(m)}
+if(r.data&&r.data.error)throw new Error(r.data.error);
+return r.data}
+
+/* ---- Başlangıç ---- */
+var qs=new URLSearchParams(location.search),LINK={th:qs.get("th"),t:qs.get("t")};
+async function boot(){
+if(typeof supabase==="undefined"){S.view="fatal";S.msg="Sayfa gerekli dosyaları yükleyemedi. İnternetini kontrol edip yenile.";return render()}
+sb=supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+if(LINK.th&&(LINK.t==="invite"||LINK.t==="recovery")){S.view="setpw";return render()}
+await enter()}
+async function enter(){
+var r=await sb.auth.getSession();
+if(!r.data.session){S.view="login";return render()}
+S.user=r.data.session.user;
+var p=await sb.from("profiles").select("*").eq("id",S.user.id).maybeSingle();
+if(p.error||!p.data){S.view="login";S.msg="Hesabın bulunamadı. Antrenörünle konuş.";await sb.auth.signOut();return render()}
+S.prof=p.data;S.open=null;
+if(S.prof.role==="admin"){S.view="admin";S.tab="videos"}else{S.view="home";await loadHome()}
+render()}
+async function loadHome(){
+var v=await sb.from("videos").select("id,title,category,description,created_at").order("created_at",{ascending:false});
+var w=await sb.from("watch_progress").select("video_id,percent").eq("user_id",S.user.id);
+await loadUnreadHome();S.vids=v.data||[];S.prog={};(w.data||[]).forEach(function(x){S.prog[x.video_id]=x.percent});
+if(v.error)toast(trErr(v.error))}
+
+/* ---- Ekranlar ---- */
+function loginHtml(){return '<div class="auth"><div class="auth-side">'+brand()+'<div><h2>Maçı birlikte izleyelim.</h2><p>Antrenörünün sana özel eklediği videolar burada. Başka kimse göremez.</p></div><div class="court"></div></div>'
++'<form class="auth-main" id="lf"><h2>Giriş yap</h2><p class="lead">Antrenörünün davet bağlantısıyla oluşturduğun e-posta ve şifreyle gir.</p>'
++'<div class="field"><label for="u">E-posta</label><input id="u" type="email" autocomplete="username" required></div>'
++'<div class="field"><label for="pw">Şifre</label><div class="pw"><input id="pw" type="password" autocomplete="current-password" required><button type="button" data-show="pw">Göster</button></div></div>'
++'<div class="err" id="le">'+esc(S.msg)+'</div><button class="btn" type="submit" id="lb">Giriş yap</button>'
++'<div class="row sp"><button class="link" type="button" data-forgot="1">Şifremi unuttum</button><span class="note">Hesabın yok mu? Antrenörünün davet bağlantısını kullan.</span></div></form></div>'}
+function setpwHtml(){var inv=LINK.t==="invite";return '<div class="auth"><div class="auth-side">'+brand()+'<div><h2>'+(inv?"Hesabını oluştur.":"Yeni şifre belirle.")+'</h2><p>Bu bağlantı sana özel ve tek kullanımlık. Süresi dolarsa antrenöründen yenisini iste.</p></div><div class="court"></div></div>'
++'<form class="auth-main" id="pf"><h2>'+(inv?"Davet edildin":"Şifreni yenile")+'</h2>'
++(inv?'<div class="inv">Antrenörün seni SAHA Video Odası\'na ekledi. Giriş için bir şifre belirle.</div>':'')
++'<div class="field"><label for="p1">Şifre belirle</label><div class="pw"><input id="p1" type="password" autocomplete="new-password" placeholder="En az 8 karakter"><button type="button" data-show="p1">Göster</button></div><div class="meter" id="mt"><span></span><span></span><span></span><span></span></div></div>'
++'<div class="field"><label for="p2">Şifreyi tekrar yaz</label><input id="p2" type="password" autocomplete="new-password"></div>'
++(inv?'<label class="chk"><input type="checkbox" id="kv"><span>Videoların yalnızca takım içi eğitim amacıyla paylaşıldığını, kaydedilmemesi ve üçüncü kişilerle paylaşılmaması gerektiğini kabul ediyorum. 18 yaşından küçükse veli onayı alınmıştır.</span></label>':'')
++'<div class="err" id="pe">'+esc(S.msg)+'</div><button class="btn" type="submit">'+(inv?"Hesabı oluştur":"Şifreyi kaydet")+'</button></form></div>'}
+function topbar(){var a=S.prof.role==="admin";return '<div class="top">'+brand()+'<div class="who"><span class="av">'+esc((S.prof.full_name||"?").charAt(0).toUpperCase())+'</span><div>'+esc(S.prof.full_name||S.user.email)+'<div class="note">'+(a?"Antrenör":"Sporcu")+'</div></div><button class="btn alt sm" data-out="1">Çıkış</button></div></div>'}
+function thumb(v){var p=S.prog[v.id]||0,isNew=!p&&(Date.now()-new Date(v.created_at))<7*864e5;
+return '<button class="vc" data-v="'+v.id+'"><div class="th">'+(isNew?'<span class="new">YENİ</span>':'')+((S.unread&&S.unread[v.id])?'<span class="badge" style="position:absolute;top:8px;right:8px">'+S.unread[v.id]+' yeni mesaj</span>':'')+'<span class="pl">▶</span></div><div class="vb"><b>'+esc(v.title)+'</b><span>'+esc(v.category)+' · '+new Date(v.created_at).toLocaleDateString("tr-TR",{day:"numeric",month:"short"})+(p>=90?" · izlendi":"")+'</span>'+(p?'<div class="bar"><i style="width:'+p+'%"></i></div>':'')+'</div></button>'}
+function homeHtml(){
+var L=(S.vids||[]).filter(function(x){return S.f==="Tümü"||x.category===S.f});
+return topbar()+'<h2 style="font-size:34px;margin-bottom:4px">Videolarım</h2><p class="lead" style="margin-bottom:12px">'+(S.vids&&S.vids.length?"Sana açılan "+S.vids.length+" video.":"Henüz sana açılmış video yok.")+'</p><div class="chips">'+["Tümü"].concat(CATS).map(function(c){return '<button class="chip'+(c===S.f?" on":"")+'" data-f="'+c+'">'+c+'</button>'}).join("")+'</div><div class="grid">'+L.map(thumb).join("")+'</div>'}
+function videoHtml(){
+var v=S.cur;return topbar()+'<button class="link" data-back="1" style="margin-bottom:12px">← Videolara dön</button><div class="two"><div><div class="player" id="pbox">'+(S.tok?'<iframe id="pl" src="'+esc(S.tok)+'" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;fullscreen" allowfullscreen></iframe>':'<p class="note" style="color:#fff;padding:20px">'+esc(S.msg||"Video hazırlanıyor...")+'</p>')+'</div>'+(S.tok?'<p class="note" style="margin-top:8px">Video açılmıyorsa <a href="'+esc(S.tok)+'" target="_blank" rel="noopener" style="color:var(--acc,#6b8cff)">burada yeni sekmede aç</a>.</p>':'')+'<h2 style="font-size:30px;margin-top:14px">'+esc(v.title)+'</h2><p class="note">'+esc(v.category)+(v.description?' · '+esc(v.description):'')+'</p>'+heatPanel()+'</div>'
++'<div class="rc"><div class="panel"><h3 style="font-size:22px">Antrenörün notları</h3>'+((S.tags&&S.tags.length)?'<div class="tags">'+S.tags.map(function(t){return '<button class="tag" data-seek="'+t.at_sec+'"><time>'+fmtT(t.at_sec)+'</time><span>'+esc(t.note)+'</span></button>'}).join("")+'</div>':'<p class="note">Bu videoya not eklenmemiş.</p>')+'</div>'+msgPanel()+'</div></div>'}
+
+/* ---- İzlenme takibi ---- */
+S.msgs=[];S.seen={};S.unread={};S.unreadTotal=0;S.mt="private";S.openT=null;
+function nameOf(id){var u=((S.adm&&S.adm.users)||[]).filter(function(x){return x.id===id})[0];return u?(u.full_name||u.email):"Sporcu"}
+function calcUnread(L){var u={},t=0;L.forEach(function(m){if(m.author_id===S.user.id)return;var sc=m.public?"public":m.athlete_id,sn=S.seen[m.video_id+"|"+sc];if(!sn||new Date(m.created_at)>new Date(sn)){u[m.video_id]=(u[m.video_id]||0)+1;t++}});S.unread=u;S.unreadTotal=t}
+async function loadSeen(){try{var q=await sb.from("msg_seen").select("video_id,scope,seen_at");S.seen={};(q.data||[]).forEach(function(x){S.seen[x.video_id+"|"+x.scope]=x.seen_at})}catch(e){}}
+async function loadUnreadHome(){try{await loadSeen();var q=await sb.from("messages").select("id,video_id,athlete_id,public,author_id,created_at");if(q.error)return;calcUnread(q.data||[])}catch(e){}}
+async function markSeen(vid,scope,L){var last=null;L.forEach(function(m){if(!last||new Date(m.created_at)>new Date(last))last=m.created_at});if(!last)return;var k=vid+"|"+scope;if(S.seen[k]&&new Date(S.seen[k])>=new Date(last))return;S.seen[k]=last;
+try{await sb.from("msg_seen").upsert({user_id:S.user.id,video_id:vid,scope:scope,seen_at:last},{onConflict:"user_id,video_id,scope"})}catch(e){}
+var all=(S.view==="admin"?(S.adm.msgs||[]):S.msgs);if(S.view==="admin")calcUnread(all)}
+function msgItem(m,seek){var mine=m.author_id===S.user.id,adm=S.prof.role==="admin";
+return '<div class="msg'+(mine?" mine":"")+'"><div class="mh"><b>'+esc(m.author_name||"Kullanıcı")+'</b>'+(m.author_role==="admin"?'<span class="pill ok">Antrenör</span>':'')+'<span class="note">'+new Date(m.created_at).toLocaleString("tr-TR",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})+'</span>'+(m.at_sec!=null?(seek?'<button class="tag" style="display:inline-flex;padding:0 6px" data-seek="'+m.at_sec+'"><time>'+fmtT(m.at_sec)+'</time></button>':'<span class="pill wait">'+fmtT(m.at_sec)+'</span>'):'')+((mine||adm)?'<button class="link" style="margin-left:auto;font-size:12px" data-mdel="'+m.id+'">Sil</button>':'')+'</div><div class="mb">'+esc(m.body)+'</div></div>'}
+function msgListHtml(){var pub=S.mt==="public",L=(S.msgs||[]).filter(function(m){return pub?m.public:!m.public});return L.length?L.map(function(m){return msgItem(m,true)}).join(""):'<p class="note">Henüz mesaj yok.</p>'}
+function msgPanel(){var u=S.unread||{};
+return '<div class="panel" style="margin-top:12px"><h3 style="font-size:22px">Soru &amp; cevap</h3><div class="chips" style="margin:8px 0"><button class="chip'+(S.mt==="private"?" on":"")+'" data-mt="private">Antrenörle özel</button><button class="chip'+(S.mt==="public"?" on":"")+'" data-mt="public">Takıma açık</button></div><div id="msgs">'+msgListHtml()+'</div>'
++'<form id="mf" style="margin-top:10px"><textarea id="mfb" rows="3" required maxlength="2000" placeholder="Sorunu ya da cevabını yaz" style="width:100%"></textarea><div class="row sp" style="margin-top:6px"><label class="note"><input type="checkbox" id="mfs"> Videonun şu anki saniyesini ekle</label><button class="btn sm" type="submit">Gönder</button></div><span class="err" id="mfe"></span></form></div>'}
+function paintMsgs(){var el=$("msgs");if(!el)return;el.innerHTML=msgListHtml();el.scrollTop=el.scrollHeight;
+document.querySelectorAll("[data-mt]").forEach(function(b){b.className="chip"+(b.getAttribute("data-mt")===S.mt?" on":"")});
+if(S.view==="video"&&S.cur){var sc=S.mt==="public"?"public":S.user.id;markSeen(S.cur.id,sc,(S.msgs||[]).filter(function(m){return (S.mt==="public")===!!m.public}))}}
+async function loadMsgs(){try{var q=await sb.from("messages").select("*").eq("video_id",S.cur.id).order("created_at");if(!q.error)S.msgs=q.data||[]}catch(e){}}
+function heatPanel(){var H=S.heat||[];if(!H.length)return '';return '<div class="panel" style="margin-top:14px"><h3 style="font-size:20px">Isı haritası'+(H.length>1?' ('+H.length+')':'')+'</h3><div class="hgrid">'+H.map(function(h){return '<figure><img class="heat" alt="" src="'+esc(h.img)+'">'+(h.cap?'<figcaption class="note">'+esc(h.cap)+'</figcaption>':'')+'</figure>'}).join("")+'</div></div>'}
+var TR=null;
+function trackStart(){
+trackStop();if(!S.tok||typeof playerjs==="undefined")return;
+var ifr=$("pl");if(!ifr)return;
+var saved=S.mine||{},seen=new Set(saved.seen||[]),dur=0,last=null,dirty=false;
+TR={seen:seen,flush:flush,timer:setInterval(flush,15000)};
+var pl=new playerjs.Player(ifr);TR.pl=pl;
+pl.on("ready",function(){
+if(saved.last_sec>10&&(saved.percent||0)<95){try{pl.setCurrentTime(saved.last_sec)}catch(x){}}
+pl.on("timeupdate",function(e){
+if(e.duration)dur=e.duration;
+if(last!=null){var d=e.seconds-last;if(d>0&&d<=2.5){seen.add(Math.floor(e.seconds/BUCKET));dirty=true}}
+last=e.seconds;TR.pos=e.seconds;S.curSec=e.seconds});
+pl.on("pause",flush);pl.on("ended",flush)});
+async function flush(){
+if(!dirty||!dur)return;dirty=false;
+var total=Math.max(1,Math.ceil(dur/BUCKET)),pct=Math.min(100,Math.round(seen.size/total*100));
+var row={user_id:S.user.id,video_id:S.cur.id,watched_sec:seen.size*BUCKET,percent:pct,seen:Array.from(seen),last_sec:Math.floor(TR.pos||0),updated_at:new Date().toISOString()};
+var r=await sb.from("watch_progress").upsert(row,{onConflict:"user_id,video_id"});
+if(!r.error){S.prog=S.prog||{};S.prog[S.cur.id]=pct}}
+}
+function trackStop(){if(TR){try{TR.flush()}catch(x){}clearInterval(TR.timer);TR=null}}
+window.addEventListener("pagehide",function(){if(TR)TR.flush()});
+document.addEventListener("visibilitychange",function(){if(document.hidden&&TR)TR.flush()});
+
+async function openVideo(id){
+trackStop();
+S.cur=(S.vids||[]).filter(function(x){return x.id===id})[0];if(!S.cur)return;
+S.view="video";S.tok=null;S.heat=[];S.msgs=[];S.mt="private";S.tags=[];S.mine=null;S.msg="";render();window.scrollTo(0,0);
+var t=await sb.from("video_tags").select("at_sec,note").eq("video_id",id).order("at_sec");S.tags=t.data||[];
+var m=await sb.from("watch_progress").select("seen,last_sec,percent").eq("user_id",S.user.id).eq("video_id",id).maybeSingle();S.mine=m.data;
+try{var hm=await sb.from("videos").select("heatmaps").eq("id",id).maybeSingle();S.heat=(hm.data&&hm.data.heatmaps)||[];render()}catch(e){}
+await loadMsgs();try{var r=await api("token",{video_id:id});S.tok=r.url}catch(e){S.msg=trErr(e)}
+if(S.view==="video"&&S.cur.id===id){render();trackStart();paintMsgs();clearInterval(S.mtimer);S.mtimer=setInterval(async function(){if(S.view!=="video"||!S.cur){clearInterval(S.mtimer);return}await loadMsgs();var a=document.activeElement;if(a&&a.id==="mfb")return;paintMsgs()},30000)}}
+
+/* ---- Antrenör paneli ---- */
+function adminHtml(){
+var h=topbar()+'<div class="tabs">'+[["videos","Videolar"],["ath","Sporcular"],["watch","İzlenme"],["msg","Mesajlar"]].map(function(t){return '<button data-tab="'+t[0]+'" class="'+(S.tab===t[0]?"on":"")+'">'+t[1]+(t[0]==="msg"&&S.unreadTotal?'<span class="badge">'+S.unreadTotal+'</span>':'')+'</button>'}).join("")+'</div>';
+var A=S.adm;if(S.tab==="msg")return h+msgAdminHtml();
+if(S.tab==="videos"){
+h+='<div class="panel"><h3 style="font-size:24px">Yeni video ekle</h3><p class="note" style="margin:4px 0 12px">Videoyu önce Bunny panelinden yükle. Videonun sayfasındaki <b>Video ID</b> değerini buraya yapıştır.</p><form id="av" class="form2">'
++'<div class="field full"><label for="avb">Bunny Video ID</label><input id="avb" required placeholder="örn. 3f2a9c1e-...."></div>'
++'<div class="field full"><label for="avt">Başlık</label><input id="avt" required placeholder="Örn. VAK - AYD maç kaydı"></div>'
++'<div class="field"><label for="avc">Kategori</label><select id="avc">'+CATS.map(function(c){return '<option>'+c+'</option>'}).join("")+'</select></div>'
++'<div class="field"><label for="ava">Kimler izleyebilir</label><select id="ava"><option value="all">Tüm takım</option><option value="selected">Seçili sporcular</option></select></div>'
++'<div class="field full" id="aacc" hidden><label>Sporcuları seç</label><div class="acc">'+((A.users||[]).filter(function(u){return u.role!=="admin"}).map(function(u){return '<label><input type="checkbox" class="aa" value="'+u.id+'"> '+esc(u.full_name||u.email)+'</label>'}).join("")||'<span class="note">Önce Sporcular sekmesinden sporcu ekle.</span>')+'</div></div>'
++'<div class="field full"><label for="avn">Zaman etiketleri (her satır: süre ve not)</label><textarea id="avn" rows="3" placeholder="04:12 Servis karşılama, 5 numara&#10;18:40 Pipe atağı"></textarea></div>'
++'<div class="field full"><label>Isı haritası görselleri (isteğe bağlı, en fazla 5)</label>'+[1,2,3,4,5].map(function(n){return '<div class="row" style="margin-top:6px;gap:8px;flex-wrap:wrap"><input class="avh" type="file" accept="image/*" style="flex:1 1 200px"><input class="avhc" maxlength="300" placeholder="Görsel '+n+' açıklaması (örn. 4. rotasyon hücum bölgeleri)" style="flex:2 1 260px"></div>'}).join("")+'<span class="note">Sporcu videoyu izlerken notların altında görür. PNG veya JPG.</span></div>'
++'<div class="full row"><button class="btn" type="submit">Videoyu ekle</button><span class="err" id="ave"></span></div></form></div>'
++'<div class="panel" style="margin-top:16px"><h3 style="font-size:24px">Videolar</h3><div class="vlist">'
++((A.videos||[]).length?A.videos.map(function(v){var ac=(A.access||{})[v.id]||[];
+return '<div class="vi"><div><b>'+esc(v.title)+'</b><div class="note">'+esc(v.category)+' · '+(v.audience==="all"?"Tüm takım":ac.length+" sporcu")+' · '+(v.published?"Yayında":"Yayında değil")+'</div></div><div class="row">'
++(v.audience==="selected"?'<button class="btn alt sm" data-acc="'+v.id+'">Sporcuları düzenle</button>':'')
++'<button class="btn alt sm" data-hed="'+v.id+'">Isı haritası ('+((v.heatmaps||[]).length)+'/5)</button>'
++'<button class="btn alt sm" data-pub="'+v.id+'">'+(v.published?"Yayından kaldır":"Yayınla")+'</button>'
++'<button class="btn alt sm danger" data-del="'+v.id+'">'+(S.confirmDel===v.id?"Emin misin? Sil":"Sil")+'</button></div>'
++(S.editHeat===v.id?heatEditor(v):'')+(S.editAcc===v.id?'<div class="acc">'+((A.users||[]).filter(function(u){return u.role!=="admin"}).map(function(u){return '<label><input type="checkbox" data-accu="'+u.id+'" data-accv="'+v.id+'"'+(ac.indexOf(u.id)>=0?" checked":"")+'> '+esc(u.full_name||u.email)+'</label>'}).join("")||'<span class="note">Sporcu yok.</span>')+'</div>':'')+'</div>'}).join(""):'<p class="note">Henüz video eklenmemiş.</p>')+'</div></div>';
+}else if(S.tab==="ath"){
+h+='<div class="panel"><h3 style="font-size:24px">Yeni sporcu davet et</h3><form id="ai" class="form2" style="margin-top:10px"><div class="field"><label for="ain">Ad soyad</label><input id="ain" required></div><div class="field"><label for="aie">E-posta</label><input id="aie" type="email" required></div><div class="full row"><button class="btn" type="submit">Davet bağlantısı oluştur</button><span class="err" id="aer"></span></div></form>'
++(A.link?linkBox(A.link):'')+'</div>'
++'<div class="panel" style="margin-top:16px"><h3 style="font-size:24px">Sporcular</h3><div style="margin-top:8px">'
++((A.users||[]).length?A.users.map(function(u){var act=!!u.last_sign_in_at;
+return '<div class="ath"><div><b>'+esc(u.full_name||"-")+'</b>'+(u.role==="admin"?' <span class="pill ok">Antrenör</span>':'')+'<div class="note">'+esc(u.email)+'</div></div><div><span class="pill '+(act?"ok":"wait")+'">'+(act?"Hesap aktif":"Davet bekliyor")+'</span><div class="note">'+(act?"Son giriş "+new Date(u.last_sign_in_at).toLocaleDateString("tr-TR",{day:"numeric",month:"short"}):"Henüz girmedi")+'</div></div><div class="row">'+(u.role==="admin"?'':'<button class="btn alt sm" data-link="'+esc(u.email)+'" data-name="'+esc(u.full_name||"")+'">'+(act?"Şifre sıfırlama linki":"Davet linki")+'</button><button class="btn alt sm danger" data-rmu="'+u.id+'">'+(S.confirmRm===u.id?"Emin misin? Kaldır":"Kaldır")+'</button>')+'</div></div>'}).join(""):'<p class="note">Henüz sporcu yok.</p>')+'</div></div>';
+}else{h+=watchHtml()}
+return h}
+function linkBox(l){return '<div class="linkbox"><code>'+esc(l)+'</code><button class="btn sm" data-cp="1">Kopyala</button><a class="btn alt sm" style="text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent("SAHA Video Odası davetin: "+l)+'">WhatsApp ile gönder</a></div><div class="note" style="margin-top:6px">Bağlantı tek kullanımlık ve 24 saat geçerli. Sporcu şifresini kendisi belirler.</div>'}
+function heatEditor(v){var H=v.heatmaps||[];return '<div class="acc" style="display:block;width:100%">'+H.map(function(h,i){return '<div class="row" style="gap:8px;align-items:flex-start;margin-bottom:8px;flex-wrap:wrap"><img src="'+esc(h.img)+'" style="width:120px;border-radius:6px"><textarea rows="3" maxlength="300" data-hcap="'+v.id+'|'+i+'" style="flex:1 1 220px" placeholder="Açıklama">'+esc(h.cap||"")+'</textarea><div><button class="btn alt sm" data-hsave="'+v.id+'|'+i+'">Açıklamayı kaydet</button> <button class="btn alt sm danger" data-hrm="'+v.id+'|'+i+'">Kaldır</button></div></div>'}).join("")+(H.length<5?'<div class="row" style="gap:8px;flex-wrap:wrap"><input type="file" accept="image/*" id="hnf" style="flex:1 1 200px"><input id="hnc" maxlength="300" placeholder="Yeni görsel açıklaması" style="flex:2 1 240px"><button class="btn sm" data-hadd="'+v.id+'">Ekle</button></div>':'<p class="note">En fazla 5 görsel eklenebilir.</p>')+'</div>'}
+function msgAdminHtml(){var A=S.adm,ath=(A.users||[]).filter(function(u){return u.role!=="admin"}),vids=A.videos||[];
+var h='<div class="panel"><h3 style="font-size:24px">Yeni soru sor</h3><form id="mfa" class="form2" style="margin-top:8px"><div class="field"><label for="mav">Video</label><select id="mav">'+vids.map(function(v){return '<option value="'+v.id+'">'+esc(v.title)+'</option>'}).join("")+'</select></div><div class="field"><label for="mar">Kime</label><select id="mar"><option value="public">Tüm takım (herkese açık)</option>'+ath.map(function(u){return '<option value="'+u.id+'">'+esc(u.full_name||u.email)+'</option>'}).join("")+'</select></div><div class="field full"><label for="mab">Soru</label><textarea id="mab" rows="3" required maxlength="2000"></textarea></div><div class="full row"><button class="btn" type="submit">Gönder</button><span class="err" id="mae"></span></div></form></div>';
+var G={};(A.msgs||[]).forEach(function(m){var sc=m.public?"public":m.athlete_id,k=m.video_id+"|"+sc;(G[k]=G[k]||{vid:m.video_id,sc:sc,L:[]}).L.push(m)});
+var T=Object.keys(G).map(function(k){return G[k]}).sort(function(a,b){return new Date(b.L[b.L.length-1].created_at)-new Date(a.L[a.L.length-1].created_at)});
+h+='<div class="panel" style="margin-top:16px"><h3 style="font-size:24px">Konuşmalar</h3>';
+if(!T.length)h+='<p class="note">Henüz mesaj yok.</p>';
+T.forEach(function(g){var k=g.vid+"|"+g.sc,v=vids.filter(function(x){return x.id===g.vid})[0],un=g.L.filter(function(m){var sn=S.seen[k];return m.author_id!==S.user.id&&(!sn||new Date(m.created_at)>new Date(sn))}).length,last=g.L[g.L.length-1];
+h+='<button class="vi thr" data-opent="'+esc(k)+'"><b>'+esc(v?v.title:"Video")+'</b> · '+(g.sc==="public"?"Tüm takım":esc(nameOf(g.sc)))+(un?'<span class="badge">'+un+'</span>':'')+'<div class="note">'+esc(last.author_name||"")+': '+esc(last.body.slice(0,80))+'</div></button>';
+if(S.openT===k){h+='<div style="padding:4px 0 12px">'+g.L.map(function(m){return msgItem(m,false)}).join("")+'<form class="mfr" data-vid="'+g.vid+'" data-sc="'+g.sc+'" style="margin-top:8px"><textarea rows="2" required maxlength="2000" style="width:100%" placeholder="Cevabını yaz"></textarea><button class="btn sm" type="submit" style="margin-top:6px">Cevapla</button></form></div>'}});
+return h+'</div>'}
+function watchHtml(){
+var A=S.adm,ath=(A.users||[]).filter(function(u){return u.role!=="admin"}),vids=(A.videos||[]).filter(function(v){return v.published}),W={};
+(A.prog||[]).forEach(function(p){(W[p.user_id]=W[p.user_id]||{})[p.video_id]=p.percent});
+if(!ath.length||!vids.length)return '<div class="panel"><p class="note">İzlenme verisi için en az bir sporcu ve bir video gerekli.</p></div>';
+function pc(u,v){return (W[u.id]||{})[v.id]||0}
+function st(p){return p>=90?"f":(p>0?"p":"n")}
+var tot=0,fin=0,never=0;
+ath.forEach(function(u){var any=false;vids.forEach(function(v){var p=pc(u,v);tot+=p;if(p>=90)fin++;if(p>0)any=true});if(!any)never++});
+var h='<div class="tiles"><div class="tile"><b>%'+Math.round(tot/(ath.length*vids.length))+'</b><span>Ortalama izlenme, tüm videolar</span></div><div class="tile"><b>'+fin+' / '+(ath.length*vids.length)+'</b><span>Sonuna kadar izlenen (sporcu × video)</span></div><div class="tile"><b>'+never+'</b><span>Hiç izleme yapmayan sporcu</span></div></div>';
+h+='<div class="panel" style="margin-bottom:16px"><h3 style="font-size:24px">Videoya göre kim ne kadar izledi</h3><div class="lg"><span><i style="background:var(--seq)"></i>Sonuna kadar izledi (%90 ve üzeri)</span><span><i style="background:color-mix(in srgb,var(--seq) 38%,var(--panel))"></i>Kısmen izledi</span><span><i style="background:var(--none)"></i>Hiç izlemedi</span></div>';
+vids.forEach(function(v){var c={f:0,p:0,n:0},t=0;ath.forEach(function(u){var p=pc(u,v);c[st(p)]++;t+=p});
+function seg(k,col){return c[k]?'<span data-tip="'+esc(v.title)+': '+c[k]+' sporcu '+({f:"sonuna kadar izledi",p:"kısmen izledi",n:"hiç izlemedi"})[k]+'" style="flex:'+c[k]+';background:'+col+'"></span>':""}
+h+='<div class="vr"><div>'+esc(v.title)+'</div><div class="stack">'+seg("f","var(--seq)")+seg("p","color-mix(in srgb,var(--seq) 38%,var(--panel))")+seg("n","var(--none)")+'</div><div class="num">%'+Math.round(t/ath.length)+' ort. · '+c.f+' tam, '+c.p+' kısmen, '+c.n+' hiç</div></div>'});
+h+='</div><div class="panel"><h3 style="font-size:24px">Sporcu ve video tablosu</h3><div class="scroll" style="margin-top:10px"><table class="hm"><thead><tr><th style="text-align:left">Sporcu</th>'+vids.map(function(v){return '<th>'+esc(v.title.slice(0,22))+'</th>'}).join("")+'<th>Ortalama</th><th></th></tr></thead><tbody>';
+var rows=ath.map(function(u){var s=0;vids.forEach(function(v){s+=pc(u,v)});return {u:u,s:s}}).sort(function(a,b){return a.s-b.s});
+rows.forEach(function(r){var u=r.u,zc=vids.filter(function(v){return !pc(u,v)}).map(function(v){return v.title});
+h+='<tr><td class="nm"><b>'+esc(u.full_name||u.email)+'</b></td>'+vids.map(function(v){var p=pc(u,v);
+return p?'<td class="c" data-tip="'+esc((u.full_name||"")+' · '+v.title)+': %'+p+'" style="background:color-mix(in srgb,var(--seq) '+Math.round(18+p*.67)+'%,var(--panel));color:'+(p>=60?"#fff":"var(--ink)")+'">%'+p+'</td>':'<td class="c z" data-tip="'+esc((u.full_name||"")+' · '+v.title)+': hiç izlemedi">—</td>'}).join("")+'<td class="av2"><b>%'+Math.round(r.s/vids.length)+'</b></td><td class="av2">'+(zc.length?'<button class="btn alt sm" data-rem="'+esc(u.full_name||"")+'" data-list="'+esc(zc.join(", "))+'">Hatırlatma metni</button>':'')+'</td></tr>'});
+return h+'</tbody></table></div></div>'}
+async function loadAdmin(){
+var a={};
+var v=await sb.from("videos").select("*").order("created_at",{ascending:false});a.videos=v.data||[];
+var ac=await sb.from("video_access").select("video_id,athlete_id");a.access={};(ac.data||[]).forEach(function(x){(a.access[x.video_id]=a.access[x.video_id]||[]).push(x.athlete_id)});
+var w=await sb.from("watch_progress").select("user_id,video_id,percent");a.prog=w.data||[];
+try{var u=await api("list_users");a.users=u.users||[]}catch(e){a.users=[];toast(trErr(e))}
+a.link=(S.adm&&S.adm.link)||null;try{var mq=await sb.from("messages").select("*").order("created_at");a.msgs=mq.error?[]:(mq.data||[]);await loadSeen();calcUnread(a.msgs)}catch(e){a.msgs=[]}S.adm=a}
+
+/* ---- Çizim ---- */
+function render(){
+var h;
+if(S.view==="loading")h='<p class="note" style="padding-top:40px">Yükleniyor...</p>';
+else if(S.view==="fatal")h='<p class="err" style="padding-top:40px">'+esc(S.msg)+'</p>';
+else if(S.view==="login")h=loginHtml();
+else if(S.view==="setpw")h=setpwHtml();
+else if(S.view==="home")h=homeHtml();
+else if(S.view==="video")h=videoHtml();
+else h=adminHtml();
+$("app").innerHTML=h}
+
+/* ---- Olaylar ---- */
+document.addEventListener("click",async function(e){
+var b=e.target.closest("button");if(!b)return;var d=function(k){return b.getAttribute(k)};
+try{
+if(d("data-show")){var i=$(d("data-show"));i.type=i.type==="password"?"text":"password";b.textContent=i.type==="password"?"Göster":"Gizle"}
+else if(d("data-forgot")){var em=$("u").value.trim();if(!em){$("le").textContent="Önce e-postanı yaz, sonra tekrar bas.";return}
+await sb.auth.resetPasswordForEmail(em);$("le").style.color="var(--ok)";$("le").textContent="E-posta adresin kayıtlıysa şifre yenileme bağlantısı gönderilir. Gelmezse antrenöründen bağlantı iste."}
+else if(d("data-out")){trackStop();await sb.auth.signOut();S.view="login";S.msg="";render()}
+else if(d("data-f")){S.f=d("data-f");render()}
+else if(d("data-v"))openVideo(d("data-v"));
+else if(d("data-back")){trackStop();S.view="home";await loadHome();render()}
+else if(d("data-seek")){if(TR&&TR.pl)TR.pl.setCurrentTime(+d("data-seek"))}
+else if(d("data-tab")){S.tab=d("data-tab");S.confirmDel=S.confirmRm=null;render()}
+else if(d("data-cp"))copy(S.adm.link)
+else if(d("data-rem")){copy("Merhaba "+(d("data-rem").split(" ")[0]||"")+", şu videoları henüz izlemedin: "+d("data-list")+". Video odasına girip bakabilir misin?")}
+else if(d("data-link")!=null){
+var em2=d("data-link");var r=await api("invite",{email:em2,full_name:d("data-name")});S.adm.link=r.link;S.tab="ath";render();window.scrollTo(0,0);toast("Bağlantı hazır")}
+else if(d("data-rmu")){var id=d("data-rmu");if(S.confirmRm!==id){S.confirmRm=id;render();return}
+await api("delete_user",{id:id});S.confirmRm=null;await loadAdmin();render();toast("Sporcu kaldırıldı")}
+else if(d("data-pub")){var vid=d("data-pub"),vv=S.adm.videos.filter(function(x){return x.id===vid})[0];
+var u=await sb.from("videos").update({published:!vv.published}).eq("id",vid);if(u.error)throw u.error;await loadAdmin();render()}
+else if(d("data-del")){var id2=d("data-del");if(S.confirmDel!==id2){S.confirmDel=id2;render();return}
+var dd=await sb.from("videos").delete().eq("id",id2);if(dd.error)throw dd.error;S.confirmDel=null;await loadAdmin();render();toast("Video silindi (Bunny'deki dosya silinmedi)")}
+else if(d("data-acc")){S.editAcc=S.editAcc===d("data-acc")?null:d("data-acc");render()}
+}catch(err){toast(trErr(err))}
+});
+document.addEventListener("change",async function(e){
+var t=e.target;
+if(t.id==="ava"){$("aacc").hidden=t.value!=="selected"}
+else if(t.hasAttribute&&t.hasAttribute("data-accu")){
+var vid=t.getAttribute("data-accv"),uid=t.getAttribute("data-accu");
+try{var r=t.checked?await sb.from("video_access").insert({video_id:vid,athlete_id:uid}):await sb.from("video_access").delete().eq("video_id",vid).eq("athlete_id",uid);
+if(r.error)throw r.error;var a=(S.adm.access[vid]=S.adm.access[vid]||[]);if(t.checked){a.push(uid)}else{S.adm.access[vid]=a.filter(function(x){return x!==uid})}toast("Kaydedildi")}catch(err){toast(trErr(err));t.checked=!t.checked}}
+});
+function img2url(f){return new Promise(function(ok,no){var r=new FileReader();r.onerror=function(){no(new Error("Görsel okunamadı"))};r.onload=function(){var im=new Image();im.onerror=function(){no(new Error("Görsel açılamadı"))};im.onload=function(){var m=1200,k=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);ok(c.toDataURL("image/jpeg",0.8))};im.src=r.result};r.readAsDataURL(f)})}
+async function saveHeat(vid,arr){var q=await sb.from("videos").update({heatmaps:arr}).eq("id",vid);if(q.error)throw q.error;await loadAdmin();render()}
+function vidOf(id){return S.adm.videos.filter(function(x){return x.id===id})[0]}
+document.addEventListener("click",async function(e){var b=e.target.closest&&e.target.closest("button");
+if(b){try{
+var g=function(k){return b.getAttribute(k)};
+if(g("data-hed")){S.editHeat=S.editHeat===g("data-hed")?null:g("data-hed");render();return}
+if(g("data-hadd")){var v=vidOf(g("data-hadd")),H=(v.heatmaps||[]).slice(),f=$("hnf").files[0];if(!f){toast("Önce bir görsel seç");return}if(H.length>=5){toast("En fazla 5 görsel");return}
+H.push({img:await img2url(f),cap:$("hnc").value.trim()});await saveHeat(v.id,H);toast("Görsel eklendi");return}
+if(g("data-hrm")){var p=g("data-hrm").split("|"),v2=vidOf(p[0]),H2=(v2.heatmaps||[]).slice();H2.splice(+p[1],1);await saveHeat(v2.id,H2);toast("Görsel kaldırıldı");return}
+if(g("data-hsave")){var p2=g("data-hsave").split("|"),v3=vidOf(p2[0]),H3=(v3.heatmaps||[]).slice(),ta=document.querySelector('[data-hcap="'+g("data-hsave")+'"]');H3[+p2[1]]={img:H3[+p2[1]].img,cap:ta.value.trim()};await saveHeat(v3.id,H3);toast("Açıklama kaydedildi");return}
+}catch(err){toast(trErr(err));return}}
+var im=e.target.closest&&e.target.closest("img.heat");if(im)window.open(im.src,"_blank")});
+document.addEventListener("input",function(e){
+if(e.target.id==="p1"){var n=strength(e.target.value),sp=$("mt").children;for(var i=0;i<4;i++)sp[i].className=i<n?"on":""}
+});
+document.addEventListener("submit",async function(e){
+e.preventDefault();var id=e.target.id;
+try{
+if(id==="lf"){$("lb").disabled=true;var r=await sb.auth.signInWithPassword({email:$("u").value.trim(),password:$("pw").value});
+if(r.error){$("lb").disabled=false;$("le").textContent=trErr(r.error);return}S.msg="";await enter()}
+else if(id==="pf"){var a=$("p1").value,b=$("p2").value,er=$("pe");
+if(a.length<8){er.textContent="Şifre en az 8 karakter olmalı.";return}
+if(a!==b){er.textContent="İki şifre aynı değil.";return}
+if($("kv")&&!$("kv").checked){er.textContent="Devam etmek için onay kutusunu işaretle.";return}
+var v=await sb.auth.verifyOtp({token_hash:LINK.th,type:LINK.t});if(v.error){er.textContent=trErr(v.error);return}
+var u=await sb.auth.updateUser({password:a});if(u.error){er.textContent=trErr(u.error);return}
+history.replaceState(null,"",location.pathname);LINK={};S.msg="";await enter();toast("Hesabın hazır")}
+else if(id==="av"){
+var bid=$("avb").value.trim(),title=$("avt").value.trim(),aud=$("ava").value,er2=$("ave");er2.textContent="";
+var hm0=[],hfs=document.querySelectorAll(".avh"),hcs=document.querySelectorAll(".avhc");for(var hi=0;hi<hfs.length;hi++){if(hfs[hi].files[0])hm0.push({img:await img2url(hfs[hi].files[0]),cap:hcs[hi].value.trim()})}
+var ins=await sb.from("videos").insert({bunny_video_id:bid,title:title,category:$("avc").value,audience:aud,heatmaps:hm0}).select("id").single();
+if(ins.error)throw ins.error;var vid=ins.data.id;
+var tg=[];$("avn").value.split(/\n/).forEach(function(l){var m=l.trim().match(/^(\d{1,2}:\d{2}(?::\d{2})?)\s+(.+)$/);if(m)tg.push({video_id:vid,at_sec:parseT(m[1]),note:m[2]})});
+if(tg.length){var r2=await sb.from("video_tags").insert(tg);if(r2.error)throw r2.error}
+if(aud==="selected"){var ids=Array.prototype.map.call(document.querySelectorAll(".aa:checked"),function(c){return {video_id:vid,athlete_id:c.value}});
+if(ids.length){var r3=await sb.from("video_access").insert(ids);if(r3.error)throw r3.error}}
+await loadAdmin();render();toast("Video eklendi")}
+else if(id==="ai"){var r4=await api("invite",{email:$("aie").value.trim(),full_name:$("ain").value.trim()});S.adm.link=r4.link;await loadAdmin();S.adm.link=r4.link;render();toast("Davet bağlantısı hazır")}
+}catch(err){var el=$("ave")||$("aer")||$("le");if(el)el.textContent=trErr(err);toast(trErr(err))}
+});
+document.addEventListener("click",function(e){
+if(e.target.closest&&e.target.closest("[data-tab]")&&S.view==="admin"&&!S._ld){S._ld=true;loadAdmin().then(function(){S._ld=false;render()})}
+});
+async function postMsg(o){var r=await sb.from("messages").insert(Object.assign({author_name:S.prof.full_name||S.user.email,author_role:S.prof.role},o));if(r.error)throw r.error}
+document.addEventListener("click",async function(e){var b=e.target.closest&&e.target.closest("button");if(!b)return;
+try{
+var mt=b.getAttribute("data-mt");if(mt){S.mt=mt;paintMsgs();return}
+var md=b.getAttribute("data-mdel");if(md){if(!confirm("Bu mesaj silinsin mi?"))return;var q=await sb.from("messages").delete().eq("id",md);if(q.error)throw q.error;
+if(S.view==="admin"){await loadAdmin();render()}else{await loadMsgs();paintMsgs()}return}
+var ot=b.getAttribute("data-opent");if(ot){S.openT=S.openT===ot?null:ot;if(S.openT){var p=ot.split("|");await markSeen(p[0],p[1],(S.adm.msgs||[]).filter(function(m){return m.video_id===p[0]&&(m.public?"public":m.athlete_id)===p[1]}))}render();return}
+}catch(err){toast(trErr(err))}});
+document.addEventListener("submit",async function(e){var f=e.target;
+try{
+if(f.id==="mf"){var tx=$("mfb").value.trim();if(!tx)return;var pub=S.mt==="public",o={video_id:S.cur.id,body:tx,public:pub,athlete_id:pub?null:S.user.id};
+if($("mfs").checked&&S.curSec!=null)o.at_sec=Math.floor(S.curSec);await postMsg(o);$("mfb").value="";$("mfs").checked=false;await loadMsgs();paintMsgs();toast("Gönderildi")}
+else if(f.id==="mfa"){var rc=$("mar").value,pb=rc==="public";await postMsg({video_id:$("mav").value,body:$("mab").value.trim(),public:pb,athlete_id:pb?null:rc});await loadAdmin();render();toast("Gönderildi")}
+else if(f.classList&&f.classList.contains("mfr")){var sc=f.getAttribute("data-sc"),pb2=sc==="public";await postMsg({video_id:f.getAttribute("data-vid"),body:f.querySelector("textarea").value.trim(),public:pb2,athlete_id:pb2?null:sc});await loadAdmin();render();toast("Cevap gönderildi")}
+}catch(err){var el=$("mfe")||$("mae");if(el)el.textContent=trErr(err);toast(trErr(err))}});
+var tip=document.createElement("div");tip.className="tip";tip.hidden=true;document.body.appendChild(tip);
+document.addEventListener("mousemove",function(e){var t=e.target.closest&&e.target.closest("[data-tip]");if(!t){tip.hidden=true;return}tip.textContent=t.getAttribute("data-tip");tip.hidden=false;tip.style.left=Math.min(e.clientX+12,window.innerWidth-270)+"px";tip.style.top=(e.clientY+14)+"px"});
+
+/* admin ilk girişte verileri çek */
+var _enter=enter;enter=async function(){await _enter();if(S.view==="admin"){await loadAdmin();render()}};
+boot();
+</script>
+</body>
+</html>

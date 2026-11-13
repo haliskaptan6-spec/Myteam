@@ -1,0 +1,271 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>SAHA Video Odası</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Düzen: tek sütunlu sade uygulama; solda marka, ortada içerik. Üstte önizleme geçişi (yalnızca tasarım gösterimi için). */
+:root{
+--bg:#f2f4f6;--panel:#ffffff;--ink:#12202c;--mute:#5d6b78;--line:#d9dfe5;
+--accent:#1c4fd6;--accent-ink:#ffffff;--accent-bg:#e4ecfd;--signal:#d9480f;--ok:#16794a;--ok-bg:#dff3e8;--warn-bg:#fdecd8;--warn:#9a5200;--bad:#b3261e;
+--seq:#2a78d6;--seq-ink:#ffffff;--none:#cdd5dc;--display:"Barlow Condensed","Arial Narrow",sans-serif;--body:"Barlow",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--seq:#3987e5;--none:#33434f;--bg:#0e161d;--panel:#16212b;--ink:#e8eef3;--mute:#92a1ae;--line:#26343f;--accent:#6c97ff;--accent-ink:#0b1220;--accent-bg:#1b2a4a;--signal:#ff8a4c;--ok:#5fd39b;--ok-bg:#12372a;--warn-bg:#3a2a12;--warn:#f0b36a;--bad:#ff8f86;color-scheme:dark}}
+:root[data-theme="dark"]{--seq:#3987e5;--none:#33434f;--bg:#0e161d;--panel:#16212b;--ink:#e8eef3;--mute:#92a1ae;--line:#26343f;--accent:#6c97ff;--accent-ink:#0b1220;--accent-bg:#1b2a4a;--signal:#ff8a4c;--ok:#5fd39b;--ok-bg:#12372a;--warn-bg:#3a2a12;--warn:#f0b36a;--bad:#ff8f86;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:0 40px}
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:.02em;margin:0;text-wrap:balance;line-height:1.1}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1040px;margin-inline:auto}
+.demo{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--ink);color:var(--bg);margin-inline:-16px;padding:8px 16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13px}
+.demo b{letter-spacing:.08em;text-transform:uppercase;font-size:11px;margin-right:4px}
+.demo button{background:transparent;border:1px solid color-mix(in srgb,var(--bg) 40%,transparent);color:var(--bg);border-radius:6px;padding:4px 10px}
+.demo button.on{background:var(--bg);color:var(--ink)}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:26px;font-weight:700;letter-spacing:.14em}
+.brand i{width:30px;height:30px;border-radius:50%;border:3px solid var(--accent);position:relative;display:inline-block}
+.brand i::before,.brand i::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid var(--accent);transform:rotate(60deg) scaleX(.45)}
+.brand i::after{transform:rotate(-60deg) scaleX(.45)}
+.brand small{font-family:var(--body);font-size:12px;letter-spacing:.12em;color:var(--mute);font-weight:500}
+/* giriş */
+.auth{display:grid;grid-template-columns:1.1fr 1fr;min-height:560px;margin-top:24px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel)}
+.auth-side{padding:32px;background:linear-gradient(160deg,var(--accent),color-mix(in srgb,var(--accent) 55%,#000));color:var(--accent-ink);display:flex;flex-direction:column;justify-content:space-between;gap:24px;position:relative;overflow:hidden}
+.auth-side .brand,.auth-side .brand small{color:#fff}
+.auth-side .brand i,.auth-side .brand i::before,.auth-side .brand i::after{border-color:#fff}
+.auth-side h2{font-size:42px;color:#fff;max-width:11ch}
+.auth-side p{max-width:34ch;color:#e6eeff;margin:10px 0 0}
+.court{position:absolute;right:-60px;bottom:-40px;width:300px;height:200px;border:2px solid rgba(255,255,255,.28);transform:rotate(-12deg)}
+.court::before{content:"";position:absolute;left:33%;top:0;bottom:0;border-left:2px solid rgba(255,255,255,.28)}
+.court::after{content:"";position:absolute;left:0;right:0;top:50%;border-top:2px solid rgba(255,255,255,.28)}
+.auth-main{padding:32px;display:flex;flex-direction:column;justify-content:center;gap:16px}
+.auth-main h2{font-size:30px}
+.lead{color:var(--mute);margin:0}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;font-weight:600;letter-spacing:.02em}
+.field input,.field select,.field textarea{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:11px 12px;width:100%}
+.field input[readonly]{opacity:.75}
+.pw{position:relative}
+.pw button{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:0;color:var(--accent);font-size:13px;font-weight:600;padding:6px 8px}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;padding:12px 18px;font-weight:600}
+.btn.alt{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.btn.sm{padding:7px 12px;font-size:13px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.link{background:none;border:0;color:var(--accent);padding:0;font-weight:600;text-align:left}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.sp{justify-content:space-between}
+.note{font-size:13px;color:var(--mute)}
+.err{color:var(--bad);font-size:13px;min-height:18px}
+.meter{display:flex;gap:4px}
+.meter span{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.meter span.on{background:var(--ok)}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--mute)}
+.chk input{margin-top:3px;width:auto}
+.inv{background:var(--accent-bg);border-radius:10px;padding:12px 14px;font-size:14px}
+/* sporcu */
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px;flex-wrap:wrap}
+.who{display:flex;align-items:center;gap:10px;font-size:14px}
+.av{width:34px;height:34px;border-radius:50%;background:var(--accent-bg);color:var(--accent);display:grid;place-items:center;font-weight:700}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 16px}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 14px;font-size:14px}
+.chip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.vc{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;text-align:left;padding:0;display:flex;flex-direction:column}
+.vc:hover{border-color:var(--accent)}
+.th{aspect-ratio:16/9;background:linear-gradient(135deg,#223647,#0f1b26);position:relative;display:grid;place-items:center;color:#fff}
+.th::before{content:"";position:absolute;inset:14% 12%;border:1.5px solid rgba(255,255,255,.18)}
+.th::after{content:"";position:absolute;left:12%;right:12%;top:50%;border-top:1.5px solid rgba(255,255,255,.18)}
+.th .pl{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.92);color:#12202c;display:grid;place-items:center;z-index:1;font-size:16px;padding-left:3px}
+.th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.7);border-radius:4px;padding:1px 6px;font-size:12px;z-index:1;font-variant-numeric:tabular-nums}
+.th .new{position:absolute;left:8px;top:8px;background:var(--signal);color:#fff;border-radius:4px;padding:1px 7px;font-size:11px;font-weight:700;letter-spacing:.06em;z-index:1}
+.vb{padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px}
+.vb b{font-weight:600}
+.vb span{font-size:13px;color:var(--mute)}
+.bar{height:4px;background:var(--line);border-radius:2px;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:2px}
+.player{aspect-ratio:16/9;max-width:100%;background:#0b131a;border-radius:12px;display:grid;place-items:center;color:#fff;position:relative}
+.player .pl{width:68px;height:68px;border-radius:50%;background:rgba(255,255,255,.92);color:#12202c;display:grid;place-items:center;font-size:24px;padding-left:5px}
+.player small{position:absolute;left:14px;bottom:12px;opacity:.7}
+.two{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:20px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px}
+.tags{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.tag{display:flex;gap:12px;background:none;border:0;text-align:left;padding:8px;border-radius:8px;align-items:baseline}
+.tag:hover{background:var(--accent-bg)}
+.tag time{font-variant-numeric:tabular-nums;color:var(--accent);font-weight:600;min-width:44px}
+/* antrenör */
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:18px;flex-wrap:wrap}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:10px 12px;font-weight:600;color:var(--mute)}
+.tabs button.on{color:var(--accent);border-color:var(--accent)}
+.drop{border:2px dashed var(--line);border-radius:12px;padding:26px;text-align:center;color:var(--mute);background:var(--bg)}
+.form2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form2 .full{grid-column:1/-1}
+.ath{display:grid;grid-template-columns:1.4fr 1fr 1fr auto;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.ath:first-of-type{border-top:0}
+.pill{font-size:12px;font-weight:600;border-radius:999px;padding:2px 10px;display:inline-block}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.pill.wait{background:var(--warn-bg);color:var(--warn)}
+.linkbox{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-top:8px}
+.linkbox code{flex:1;min-width:0;overflow-wrap:anywhere;font-size:13px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:9px 10px;border-top:1px solid var(--line)}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);border-top:0}
+.scroll{overflow-x:auto}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:14px;z-index:20}
+@media(max-width:760px){.auth{grid-template-columns:1fr}.auth-side{min-height:220px}.auth-side h2{font-size:32px}.two{grid-template-columns:1fr}.form2{grid-template-columns:1fr}.ath{grid-template-columns:1fr 1fr}.ath>:last-child{grid-column:1/-1}}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.tile b{display:block;font-family:var(--display);font-size:38px;line-height:1;font-variant-numeric:tabular-nums}
+.tile span{color:var(--mute);font-size:13px}
+.lg{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--mute);margin:8px 0 14px}
+.lg i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.vr{display:grid;grid-template-columns:minmax(120px,220px) minmax(0,1fr) 150px;gap:14px;align-items:center;padding:7px 0}
+.vr .nm{font-size:14px;overflow-wrap:anywhere}
+.stack{display:flex;gap:2px;height:16px}
+.stack span{display:block;height:100%;min-width:0}
+.stack span:first-child{border-radius:4px 0 0 4px}.stack span:last-child{border-radius:0 4px 4px 0}
+.vr .num{font-size:13px;color:var(--mute);font-variant-numeric:tabular-nums}
+.hm{border-collapse:separate;border-spacing:2px;width:auto;min-width:100%}
+.hm th{font-size:11px;letter-spacing:.03em;text-transform:none;color:var(--mute);text-align:center;padding:4px 2px;border:0;max-width:78px;font-weight:600}
+.hm th.l{text-align:left}
+.hm td{border:0;padding:0}
+.hm td.c{height:36px;min-width:56px;text-align:center;border-radius:5px;font-size:13px;font-variant-numeric:tabular-nums;font-weight:600}
+.hm td.c.z{background:var(--none);color:var(--mute);font-weight:400}
+.hm td.nm{padding:0 10px 0 0;white-space:nowrap;font-size:14px}
+.hm td.av2{padding-left:10px;white-space:nowrap;font-variant-numeric:tabular-nums;font-size:14px}
+.tip{position:fixed;z-index:30;background:var(--ink);color:var(--bg);padding:6px 10px;border-radius:6px;font-size:13px;pointer-events:none;max-width:260px}
+@media(max-width:760px){.vr{grid-template-columns:1fr}.vr .num{order:3}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="demo" role="tablist" aria-label="Ekran önizlemesi"><b>Tasarım önizlemesi</b>
+<button data-s="login" class="on">Giriş</button><button data-s="invite">Davet bağlantısı</button><button data-s="home">Sporcu ekranı</button><button data-s="admin">Antrenör paneli</button>
+<span style="margin-left:auto;opacity:.75">Örnek veriler. Gerçek giriş ve video yok.</span></div>
+
+<div class="wrap" id="app"></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+var V=[
+{id:1,t:"VAK - AYD maç kaydı",c:"Maç",d:"3 Eki",m:"1:42:10",n:true,p:0,tags:[["04:12","Servis karşılama, 5 numara"],["18:40","Pipe atağı, blok kapanışı"],["52:05","2. set sonu, rotasyon 4"],["1:12:30","Savunma pozisyonları"]]},
+{id:2,t:"Rakip analizi: Galatasaray Genç",c:"Rakip analizi",d:"7 Eki",m:"24:35",n:true,p:0,tags:[["02:10","Rakip servis alanları"],["09:45","Pasör yönlendirmeleri"],["17:20","Blok önerileri"]]},
+{id:3,t:"Salı antrenmanı: servis karşılama",c:"Antrenman",d:"6 Eki",m:"18:05",n:false,p:70,tags:[["01:30","Ayak çalışması"],["08:15","Karşılama sonrası pas hedefi"]]},
+{id:4,t:"Bireysel: atak yönleri",c:"Bireysel",d:"29 Eyl",m:"11:48",n:false,p:100,tags:[["00:40","Zon 4 çıkışı"],["05:10","Köşe atakları"]]},
+{id:5,t:"Maç özeti: ilk iki set",c:"Maç",d:"26 Eyl",m:"36:20",n:false,p:35,tags:[["10:05","Seri sayılar"],["28:30","Hata analizi"]]},
+{id:6,t:"Blok hareketi: orta oyuncu",c:"Antrenman",d:"22 Eyl",m:"14:22",n:false,p:0,tags:[["03:00","Adım sırası"],["09:30","Kapama zamanlaması"]]}];
+var A=[
+{n:"Örnek Sporcu 1",e:"sporcu1@ornek.com",st:"ok",last:"Bugün 09:12",w:12},
+{n:"Örnek Sporcu 2",e:"sporcu2@ornek.com",st:"ok",last:"Dün 21:40",w:9},
+{n:"Örnek Sporcu 3",e:"sporcu3@ornek.com",st:"wait",last:"Henüz girmedi",w:0},
+{n:"Örnek Sporcu 4",e:"sporcu4@ornek.com",st:"wait",last:"Henüz girmedi",w:0},
+{n:"Örnek Sporcu 5",e:"sporcu5@ornek.com",st:"ok",last:"3 gün önce",w:5}];
+var S={s:"login",f:"Tümü",v:null,tab:"videos",open:null,links:{}};
+var $=function(i){return document.getElementById(i)};
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function toast(m){var t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(function(){t.hidden=true},2200)}
+function copy(txt){try{navigator.clipboard.writeText(txt).then(function(){toast("Kopyalandı")},function(){toast("Kopyalanamadı, metni seçip kopyala")})}catch(x){toast("Kopyalanamadı, metni seçip kopyala")}}
+function brand(){return '<div class="brand"><i></i><div>SAHA<br><small>VİDEO ODASI</small></div></div>'}
+function login(){return '<div class="auth"><div class="auth-side">'+brand()+'<div><h2>Maçı birlikte izleyelim.</h2><p>Antrenörünün seni özel olarak eklediği videolar burada. Başka kimse göremez.</p></div><div class="court"></div></div>'
++'<form class="auth-main" id="lf"><h2>Giriş yap</h2><p class="lead">Antrenörünün sana verdiği e-posta ve şifreyle gir.</p>'
++'<div class="field"><label for="u">E-posta veya kullanıcı adı</label><input id="u" autocomplete="username" placeholder="ornek@eposta.com"></div>'
++'<div class="field"><label for="pw">Şifre</label><div class="pw"><input id="pw" type="password" autocomplete="current-password"><button type="button" data-show="pw">Göster</button></div></div>'
++'<div class="err" id="le"></div><button class="btn" type="submit">Giriş yap</button><div class="inv" style="font-size:13px"><b>Demo girişi</b> (yalnızca bu önizleme için, gerçek sistemde farklı olacak)<br>Antrenör: <code>admin</code> / <code>Demo-1234</code><br>Sporcu: <code>sporcu</code> / <code>Demo-1234</code></div>'
++'<div class="row sp"><button class="link" type="button" data-forgot="1">Şifremi unuttum</button><span class="note">Hesabın yok mu? Antrenörünün davet bağlantısını kullan.</span></div></form></div>'}
+function strength(p){var n=0;if(p.length>=8)n++;if(/[a-zçğıöşü]/.test(p)&&/[A-ZÇĞİÖŞÜ]/.test(p))n++;if(/\d/.test(p))n++;if(/[^\w]/.test(p)||p.length>=12)n++;return n}
+function invite(){return '<div class="auth"><div class="auth-side">'+brand()+'<div><h2>Hesabını oluştur.</h2><p>Bu bağlantı sana özel ve tek kullanımlık. 7 gün geçerli.</p></div><div class="court"></div></div>'
++'<form class="auth-main" id="if"><h2>Davet edildin</h2><div class="inv">Antrenörün seni <b>Örnek Takım</b> video odasına ekledi.</div>'
++'<div class="field"><label for="ie">E-posta</label><input id="ie" value="sporcu3@ornek.com" readonly></div>'
++'<div class="field"><label for="in">Adın</label><input id="in" value="Örnek Sporcu 3" autocomplete="name"></div>'
++'<div class="field"><label for="p1">Şifre belirle</label><div class="pw"><input id="p1" type="password" autocomplete="new-password" placeholder="En az 8 karakter"><button type="button" data-show="p1">Göster</button></div><div class="meter" id="mt"><span></span><span></span><span></span><span></span></div></div>'
++'<div class="field"><label for="p2">Şifreyi tekrar yaz</label><input id="p2" type="password" autocomplete="new-password"></div>'
++'<label class="chk"><input type="checkbox" id="kv"><span>Videoların yalnızca takım içi eğitim amacıyla paylaşıldığını, kaydedilmesinin ve üçüncü kişilerle paylaşılmamasının benden beklendiğini kabul ediyorum. 18 yaşından küçükse veli onayı alınmıştır.</span></label>'
++'<div class="err" id="ie2"></div><button class="btn" type="submit">Hesabı oluştur</button></form></div>'}
+function thumb(v){return '<button class="vc" data-v="'+v.id+'"><div class="th">'+(v.n?'<span class="new">YENİ</span>':'')+'<span class="pl">▶</span><span class="dur">'+v.m+'</span></div><div class="vb"><b>'+esc(v.t)+'</b><span>'+esc(v.c)+' · '+esc(v.d)+'</span>'+(v.p?'<div class="bar"><i style="width:'+v.p+'%"></i></div>':'')+'</div></button>'}
+function topbar(role){return '<div class="top">'+brand()+'<div class="who"><span class="av">'+(role==="a"?"A":"S")+'</span><div>'+(role==="a"?"Antrenör":"Örnek Sporcu 1")+'<div class="note">'+(role==="a"?"Yönetici":"Sporcu")+'</div></div><button class="btn alt sm" data-s="login">Çıkış</button></div></div>'}
+function home(){
+if(S.v){var v=V.filter(function(x){return x.id===S.v})[0];
+return topbar("s")+'<button class="link" data-back="1" style="margin-bottom:12px">← Videolara dön</button><div class="two"><div><div class="player"><span class="pl">▶</span><small>Örnek oynatıcı</small></div><h2 style="font-size:30px;margin-top:14px">'+esc(v.t)+'</h2><p class="note">'+esc(v.c)+' · '+esc(v.d)+' · '+v.m+'</p></div><div class="panel"><h3 style="font-size:22px">Antrenörün notları</h3><div class="tags">'+v.tags.map(function(t){return '<button class="tag" data-tag="'+t[0]+'"><time>'+t[0]+'</time><span>'+esc(t[1])+'</span></button>'}).join("")+'</div></div></div>';}
+var cats=["Tümü","Maç","Antrenman","Bireysel","Rakip analizi"];
+var L=V.filter(function(x){return S.f==="Tümü"||x.c===S.f});
+return topbar("s")+'<h2 style="font-size:34px;margin-bottom:4px">Videolarım</h2><p class="lead" style="margin-bottom:12px">Sana atanan '+V.length+' video. Kaldığın yerden devam edebilirsin.</p><div class="chips">'+cats.map(function(c){return '<button class="chip'+(c===S.f?" on":"")+'" data-f="'+c+'">'+c+'</button>'}).join("")+'</div><div class="grid">'+L.map(thumb).join("")+'</div>';}
+
+var W=[[100,100,70,100,100,100],[100,60,100,100,45,100],[0,0,0,0,0,0],[0,0,0,0,0,0],[85,0,40,100,0,30]];
+var WS=["VAK-AYD maç","Rakip analizi","Servis karşılama","Atak yönleri","Maç özeti","Blok hareketi"];
+function wstat(p){return p>=90?"f":(p>0?"p":"n")}
+function watchHtml(){
+var na=A.length,nv=V.length,sum=0,fin=0,zero=0;
+for(var i=0;i<na;i++)for(var j=0;j<nv;j++){sum+=W[i][j];if(W[i][j]>=90)fin++;if(W[i][j]===0)zero++;}
+var never=[];for(i=0;i<na;i++){if(W[i].every(function(x){return x===0}))never.push(i);}
+var h='<div class="tiles"><div class="tile"><b>%'+Math.round(sum/(na*nv))+'</b><span>Ortalama izlenme, tüm videolar</span></div><div class="tile"><b>'+fin+' / '+(na*nv)+'</b><span>Sonuna kadar izlenen (sporcu × video)</span></div><div class="tile"><b>'+never.length+'</b><span>Hiç izleme yapmayan sporcu</span></div></div>';
+h+='<div class="panel" style="margin-bottom:16px"><h3 style="font-size:24px">Videoya göre kim ne kadar izledi</h3><p class="note" style="margin:4px 0 0">Her çubuk bir video. '+na+' sporcu 100\'e bölünür.</p><div class="lg"><span><i style="background:var(--seq)"></i>Sonuna kadar izledi (%90 ve üzeri)</span><span><i style="background:color-mix(in srgb,var(--seq) 38%,var(--panel))"></i>Kısmen izledi</span><span><i style="background:var(--none)"></i>Hiç izlemedi</span></div>';
+V.forEach(function(v,j){
+var c={f:0,p:0,n:0},t=0;for(var i=0;i<na;i++){c[wstat(W[i][j])]++;t+=W[i][j];}
+function seg(k,col){return c[k]?'<span data-tip="'+esc(v.t)+': '+c[k]+' sporcu '+({f:"sonuna kadar izledi",p:"kısmen izledi",n:"hiç izlemedi"})[k]+'" style="flex:'+c[k]+';background:'+col+'"></span>':""}
+h+='<div class="vr"><div class="nm">'+esc(v.t)+'</div><div class="stack">'+seg("f","var(--seq)")+seg("p","color-mix(in srgb,var(--seq) 38%,var(--panel))")+seg("n","var(--none)")+'</div><div class="num">%'+Math.round(t/na)+' ort. · '+c.f+' tam, '+c.p+' kısmen, '+c.n+' hiç</div></div>';});
+h+='</div><div class="panel"><div class="row sp"><h3 style="font-size:24px">Sporcu ve video tablosu</h3><span class="note">Hücre: izlenen yüzde</span></div><div class="scroll" style="margin-top:10px"><table class="hm"><thead><tr><th class="l">Sporcu</th>'+WS.map(function(x){return '<th>'+esc(x)+'</th>'}).join("")+'<th>Ortalama</th><th></th></tr></thead><tbody>';
+var order=A.map(function(a,i){return i}).sort(function(x,y){var ax=W[x].reduce(function(a,b){return a+b},0),ay=W[y].reduce(function(a,b){return a+b},0);return ax-ay});
+order.forEach(function(i){
+var avg=Math.round(W[i].reduce(function(a,b){return a+b},0)/nv),zc=W[i].filter(function(x){return x===0}).length;
+h+='<tr><td class="nm"><b>'+esc(A[i].n)+'</b><div class="note">'+esc(A[i].last)+'</div></td>'+W[i].map(function(p,j){
+if(!p)return '<td class="c z" data-tip="'+esc(A[i].n+' · '+V[j].t)+': hiç izlemedi">—</td>';
+return '<td class="c" data-tip="'+esc(A[i].n+' · '+V[j].t)+': %'+p+' izledi" style="background:color-mix(in srgb,var(--seq) '+Math.round(18+p*0.67)+'%,var(--panel));color:'+(p>=60?"#fff":"var(--ink)")+'">%'+p+'</td>';}).join("")
++'<td class="av2"><b>%'+avg+'</b></td><td class="av2">'+(zc?'<button class="btn alt sm" data-rem="'+i+'">Hatırlatma metni</button>':"")+'</td></tr>';});
+h+='</tbody></table></div><p class="note" style="margin:10px 0 0">Tabloda en az izleyen sporcu en üstte durur. Hiç izlenmeyen video "—" ile gösterilir.</p></div>';
+return h;}
+function admin(){
+var h=topbar("a")+'<div class="tabs">'+[["videos","Video yükle"],["ath","Sporcular"],["watch","İzlenme"]].map(function(t){return '<button data-tab="'+t[0]+'" class="'+(S.tab===t[0]?"on":"")+'">'+t[1]+'</button>'}).join("")+'</div>';
+if(S.tab==="videos"){
+h+='<div class="panel"><div class="drop" id="dz"><b>Video dosyasını buraya bırak</b><div class="note">veya <label for="vf" style="color:var(--accent);font-weight:600;cursor:pointer">dosya seç</label> · MP4, MOV · tek dosya en fazla 4 GB</div><input id="vf" type="file" accept="video/*" hidden><div id="vn" class="note" style="margin-top:6px"></div></div>'
++'<div class="form2" style="margin-top:14px"><div class="field full"><label for="vt">Başlık</label><input id="vt" placeholder="Örn. VAK - AYD maç kaydı"></div>'
++'<div class="field"><label for="vc">Kategori</label><select id="vc"><option>Maç</option><option>Antrenman</option><option>Bireysel</option><option>Rakip analizi</option></select></div>'
++'<div class="field"><label for="vw">Kimler izleyebilir</label><select id="vw"><option>Tüm takım</option><option>Seçili sporcular</option></select></div>'
++'<div class="field full"><label for="vn2">Zaman etiketleri (her satır: süre ve not)</label><textarea id="vn2" rows="3" placeholder="04:12 Servis karşılama, 5 numara"></textarea></div></div>'
++'<div class="row" style="margin-top:14px"><button class="btn" id="up">Yükle ve yayınla</button><span class="note">Yükleme bitince video otomatik farklı çözünürlüklere çevrilir.</span></div></div>';
+}else if(S.tab==="ath"){
+h+='<div class="panel"><div class="row sp"><h3 style="font-size:24px">Sporcular</h3><button class="btn sm" data-new="1">+ Yeni sporcu davet et</button></div><div style="margin-top:8px">'
++A.map(function(a,i){return '<div class="ath"><div><b>'+esc(a.n)+'</b><div class="note">'+esc(a.e)+'</div></div><div><span class="pill '+a.st+'">'+(a.st==="ok"?"Hesap aktif":"Davet bekliyor")+'</span></div><div class="note">'+a.last+'</div><div class="row"><button class="btn alt sm" data-inv="'+i+'">'+(a.st==="ok"?"Şifre sıfırla":"Davet linki oluştur")+'</button></div>'+(S.links[i]?'<div style="grid-column:1/-1"><div class="linkbox"><code>'+S.links[i]+'</code><button class="btn sm" data-cp="'+i+'">Kopyala</button><a class="btn alt sm" style="text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent("SAHA Video Odası davetin: "+S.links[i])+'">WhatsApp ile gönder</a></div><div class="note" style="margin-top:6px">Bağlantı 7 gün geçerli, tek kullanımlık. Sporcu bağlantıdan şifresini kendisi belirler.</div></div>':'')+'</div>'}).join("")+'</div></div>';
+}else{
+h+=watchHtml();}
+return h;}
+function render(){
+var b=document.querySelectorAll(".demo [data-s]");for(var i=0;i<b.length;i++)b[i].classList.toggle("on",b[i].getAttribute("data-s")===S.s);
+$("app").innerHTML=({login:login,invite:invite,home:home,admin:admin})[S.s]();
+}
+document.addEventListener("click",function(e){
+var b=e.target.closest("button");if(!b)return;
+var d=function(k){return b.getAttribute(k)};
+if(d("data-s")){S.s=d("data-s");S.v=null;render();window.scrollTo(0,0);}
+else if(d("data-show")){var i=$(d("data-show"));i.type=i.type==="password"?"text":"password";b.textContent=i.type==="password"?"Göster":"Gizle";}
+else if(d("data-forgot"))toast("Şifre sıfırlama bağlantısı e-posta ile gönderilir (önizleme)");
+else if(d("data-f")){S.f=d("data-f");render();}
+else if(d("data-v")){S.v=+d("data-v");render();window.scrollTo(0,0);}
+else if(d("data-back")){S.v=null;render();}
+else if(d("data-tag"))toast(d("data-tag")+" anına git (önizleme)");
+else if(d("data-tab")){S.tab=d("data-tab");render();}
+else if(d("data-inv")){var k=+d("data-inv");S.links[k]="https://video.ornek-takim.com/davet/"+Math.random().toString(36).slice(2,8)+Math.random().toString(36).slice(2,8);render();}
+else if(d("data-cp")){copy(S.links[+d("data-cp")]);}
+else if(d("data-rem")){var ii=+d("data-rem"),zz=[];W[ii].forEach(function(p,j){if(!p)zz.push(V[j].t)});copy("Merhaba "+A[ii].n.split(" ")[0]+", şu videoları henüz izlemedin: "+zz.join(", ")+". Video odasına girip bakabilir misin?");}
+else if(d("data-new")){A.push({n:"Yeni sporcu",e:"yeni@ornek.com",st:"wait",last:"Henüz girmedi",w:0});render();toast("Önizleme: sporcu listeye eklendi");}
+else if(b.id==="up"){var t=$("vt").value.trim();if(!t){toast("Önce videoya bir başlık yaz");return;}toast("Önizleme: yükleme başlatılmaz");}
+});
+document.addEventListener("submit",function(e){e.preventDefault();
+if(e.target.id==="lf"){var u=$("u").value.trim().toLowerCase(),p=$("pw").value;
+if(p==="Demo-1234"&&u==="admin"){S.s="admin";S.tab="watch";render();}
+else if(p==="Demo-1234"&&u==="sporcu"){S.s="home";render();}
+else $("le").textContent="Kullanıcı adı veya şifre hatalı.";}
+else if(e.target.id==="if"){var a=$("p1").value,b=$("p2").value,er=$("ie2");
+if(a.length<8)er.textContent="Şifre en az 8 karakter olmalı.";
+else if(a!==b)er.textContent="İki şifre aynı değil.";
+else if(!$("kv").checked)er.textContent="Devam etmek için onay kutusunu işaretle.";
+else{S.s="home";render();toast("Hesabın hazır (önizleme)");}}
+});
+document.addEventListener("input",function(e){
+if(e.target.id==="p1"){var n=strength(e.target.value),sp=$("mt").children;for(var i=0;i<4;i++)sp[i].className=i<n?"on":"";}
+});
+document.addEventListener("change",function(e){if(e.target.id==="vf"&&e.target.files[0])$("vn").textContent=e.target.files[0].name;});
+var tip=document.createElement("div");tip.className="tip";tip.hidden=true;document.body.appendChild(tip);
+document.addEventListener("mousemove",function(e){var t=e.target.closest&&e.target.closest("[data-tip]");if(!t){tip.hidden=true;return}tip.textContent=t.getAttribute("data-tip");tip.hidden=false;tip.style.left=Math.min(e.clientX+12,window.innerWidth-270)+"px";tip.style.top=(e.clientY+14)+"px";});
+render();
+</script>
+
+</body></html>

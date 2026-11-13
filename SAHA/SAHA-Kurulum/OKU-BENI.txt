@@ -1,0 +1,20 @@
+﻿SAHA - BILGISAYARA KURULUM
+==========================
+
+1) Bu zip'i bir klasore cikar (Masaustu olabilir).
+2) "SAHA-KUR.bat" dosyasina cift tikla. (Mavi "Windows korudu" ekrani cikarsa: Ek bilgi > Yine de calistir)
+3) Masaustunde SAHA simgesi olusur. Cift tiklayinca kendi penceresinde, tarayici cubugu olmadan acilir.
+   Gorev cubuguna sag tikla > "Gorev cubuguna sabitle" yapabilirsin.
+
+YEDEKLEME (verilerin kaybolmasin)
+- Uygulamada Sheetler > Yedek > "Yedek klasoru sec" -> Belgelerim\SAHA-Yedek klasorunu sec. Bir kez yeterli.
+- Her degisiklikten ~8 saniye sonra saha-yedek.json yenilenir, ayrica son 14 gunun gunluk yedegi tutulur.
+- Tarayici verisi silinirse: Yedek > "Klasorden geri yukle".
+- Bilgisayar acilinca tarayici bir kez izin isteyebilir: "Yedeklemeyi surdur" butonuna bas.
+
+ESKI VERILERIN
+- Daha once saha.html'i hangi tarayicida actiysan veri o tarayicidadir. Kurulum varsayilan tarayiciyi kullanir.
+- Veri gorunmuyorsa: eski yerde "Yedek indir", yeni SAHA'da "Yedek yukle".
+
+GUNCELLEME
+- Yeni saha.html geldiginde zip'teki saha.html ile degistirip SAHA-KUR.bat'i tekrar calistir. Veriler silinmez.

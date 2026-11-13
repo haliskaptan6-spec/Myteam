@@ -1,0 +1,118 @@
+// SAHA Video Odası - tek Edge Function (saha-api)
+// Gizli anahtarlar Supabase "Secrets" bölümünde durur, kodda anahtar YOK.
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
+
+const URL_ = Deno.env.get("SUPABASE_URL")!;
+const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const ANON = Deno.env.get("SUPABASE_ANON_KEY") || "";
+const BUNNY_KEY = Deno.env.get("BUNNY_TOKEN_KEY")!;
+const LIB = Deno.env.get("BUNNY_LIBRARY_ID") || "776569";
+const SITE = (Deno.env.get("SITE_URL") || "").replace(/\/+$/, "");
+const PUB = ANON || "sb_publishable_kuZTPoYEkzvKnyK51AG4VQ_-cCqBALp";
+
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+const out = (o: unknown, s = 200) =>
+  new Response(JSON.stringify(o), { status: s, headers: { ...CORS, "Content-Type": "application/json" } });
+
+async function sha256hex(s: string) {
+  const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(b)).map((x) => x.toString(16).padStart(2, "0")).join("");
+}
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
+  try {
+    const jwt = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+    if (!jwt) return out({ error: "Giriş yapman gerekiyor." }, 401);
+    const admin = createClient(URL_, SERVICE, { auth: { persistSession: false } });
+    const { data: ud, error: ue } = await admin.auth.getUser(jwt);
+    if (ue || !ud.user) return out({ error: "Oturum geçersiz. Tekrar giriş yap." }, 401);
+    const user = ud.user;
+    // yetkiyi kullanıcının kendi oturumuyla oku (RLS izin veriyor, anahtar türünden etkilenmez)
+    const me = createClient(URL_, PUB, { global: { headers: { Authorization: `Bearer ${jwt}` } }, auth: { persistSession: false } });
+    let role: string | null = null;
+    const r1 = await me.from("profiles").select("role").eq("id", user.id).maybeSingle();
+    role = r1.data?.role ?? null;
+    if (!role) {
+      const r2 = await admin.from("profiles").select("role").eq("id", user.id).maybeSingle();
+      role = r2.data?.role ?? null;
+    }
+    const isAdmin = role === "admin";
+    const body = await req.json().catch(() => ({}));
+    const action = body.action;
+
+    if (action === "token") {
+      const vid = String(body.video_id || "");
+      // RLS: kullanıcı yalnızca erişimi olan videoyu görebilir; görüyorsa izin vardır
+      const { data: v } = await me.from("videos").select("id,bunny_video_id,published,audience").eq("id", vid).maybeSingle();
+      if (!v) return out({ error: "Bu videoya erişimin yok veya video bulunamadı." }, 404);
+      if (!isAdmin && !v.published) return out({ error: "Bu video yayında değil." }, 403);
+      const expires = Math.floor(Date.now() / 1000) + 4 * 3600;
+      const token = await sha256hex(BUNNY_KEY + v.bunny_video_id + expires);
+      return out({ url: `https://iframe.mediadelivery.net/embed/${LIB}/${v.bunny_video_id}?token=${token}&expires=${expires}&autoplay=false&preload=true` });
+    }
+
+    // buradan sonrası sadece antrenör
+    if (!isAdmin) return out({ error: "Bu işlem için yetkin yok. (hesap rolü: " + (role || "bulunamadı") + ")" }, 403);
+
+    if (action === "list_users") {
+      const list: any[] = [];
+      for (let p = 1; p < 20; p++) {
+        const { data, error } = await admin.auth.admin.listUsers({ page: p, perPage: 200 });
+        if (error) throw error;
+        list.push(...data.users);
+        if (data.users.length < 200) break;
+      }
+      let { data: profs } = await admin.from("profiles").select("id,full_name,role");
+      if (!profs || !profs.length) { const rr = await me.from("profiles").select("id,full_name,role"); profs = rr.data; }
+      const pm: Record<string, any> = {};
+      (profs || []).forEach((x: any) => (pm[x.id] = x));
+      const users = list.map((u) => ({
+        id: u.id,
+        email: u.email,
+        full_name: pm[u.id]?.full_name || u.user_metadata?.full_name || "",
+        role: pm[u.id]?.role || "athlete",
+        last_sign_in_at: u.last_sign_in_at || null,
+      })).sort((a, b) => (a.role === "admin" ? -1 : 0) - (b.role === "admin" ? -1 : 0) || (a.full_name || "").localeCompare(b.full_name || "", "tr"));
+      return out({ users });
+    }
+
+    if (action === "invite") {
+      const email = String(body.email || "").trim().toLowerCase();
+      const name = String(body.full_name || "").trim();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return out({ error: "Geçerli bir e-posta yaz." }, 400);
+      if (!SITE) return out({ error: "SITE_URL ayarlanmamış." }, 500);
+      let type = "invite";
+      let r = await admin.auth.admin.generateLink({ type: "invite", email, options: { data: { full_name: name } } });
+      if (r.error) {
+        // hesap zaten varsa şifre sıfırlama bağlantısı üret
+        type = "recovery";
+        r = await admin.auth.admin.generateLink({ type: "recovery", email });
+        if (r.error) return out({ error: r.error.message }, 400);
+      }
+      const uid = r.data.user?.id;
+      if (uid) try {
+        const { data: ex } = await admin.from("profiles").select("id").eq("id", uid).maybeSingle();
+        if (!ex) await admin.from("profiles").insert({ id: uid, full_name: name, role: "athlete", email });
+        else if (name) await admin.from("profiles").update({ full_name: name, email }).eq("id", uid);
+      } catch (_) { /* profil satırını tetikleyici oluşturur */ }
+      return out({ link: `${SITE}/?th=${r.data.properties.hashed_token}&t=${type}` });
+    }
+
+    if (action === "delete_user") {
+      const id = String(body.id || "");
+      if (id === user.id) return out({ error: "Kendi hesabını silemezsin." }, 400);
+      const { error } = await admin.auth.admin.deleteUser(id);
+      if (error) return out({ error: error.message }, 400);
+      return out({ ok: true });
+    }
+
+    return out({ error: "Bilinmeyen işlem." }, 400);
+  } catch (e) {
+    return out({ error: String((e as Error).message || e) }, 500);
+  }
+});
