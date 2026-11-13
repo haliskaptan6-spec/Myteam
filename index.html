@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Myteam · Oyuncu Analizi</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>Myteam <span>Voleybol Scout Analizi</span></h1>
+  <nav id="tabs" role="tablist">
+    <button role="tab" data-tab="player" aria-selected="true">Oyuncu Analizi</button>
+    <button role="tab" data-tab="compare" aria-selected="false">Oyuncu Kıyaslama</button>
+    <button role="tab" data-tab="team" aria-selected="false">Takım Karşılaştırma</button>
+  </nav>
+</header>
+
+<main>
+  <!-- OYUNCU ANALİZİ -->
+  <section id="tab-player">
+    <div class="filters">
+      <label>Takım <select id="p-team"></select></label>
+      <label>Oyuncu <select id="p-player"></select></label>
+      <label>Beceri fazı
+        <select id="p-phase">
+          <option value="">Tümü</option><option value="SO">Sideout (servis karşılarken)</option><option value="BP">Break (servis atarken)</option>
+        </select>
+      </label>
+      <label>Detay becerisi <select id="p-skill"></select></label>
+    </div>
+    <div class="tiles" id="p-tiles"></div>
+    <div class="grid">
+      <div class="card">
+        <h2>Becerilere göre değerlendirme dağılımı</h2>
+        <p class="sub">Her becerideki aksiyonların değerlendirmelere yüzde dağılımı</p>
+        <div class="plot"><canvas id="p-dist"></canvas></div>
+      </div>
+      <div class="card">
+        <h2>Maç maç sayılar: sideout ve break</h2>
+        <p class="sub">Servis ası, hücum ve blok sayıları; hafta ve rakip</p>
+        <div class="plot"><canvas id="p-points"></canvas></div>
+      </div>
+      <div class="card wide">
+        <h2>Beceri detayı</h2>
+        <p class="sub">Verim = (# − hata) / toplam. Hücumda bloklanan top (/) hata sayılır.</p>
+        <div class="scroll"><table id="p-table"></table></div>
+      </div>
+      <div class="card wide">
+        <h2 id="p-trend-title"></h2>
+        <p class="sub" id="p-trend-sub"></p>
+        <div class="plot"><canvas id="p-trend"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OYUNCU KIYASLAMA -->
+  <section id="tab-compare" hidden>
+    <div class="filters">
+      <fieldset><legend><i class="sw a"></i>Oyuncu A</legend>
+        <label>Takım <select id="c-team-a"></select></label>
+        <label>Oyuncu <select id="c-player-a"></select></label>
+      </fieldset>
+      <fieldset><legend><i class="sw b"></i>Oyuncu B</legend>
+        <label>Takım <select id="c-team-b"></select></label>
+        <label>Oyuncu <select id="c-player-b"></select></label>
+      </fieldset>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h2>Oyuncu profili</h2>
+        <p class="sub">Ligdeki tüm oyuncular içinde yüzdelik sıra (100 = en iyi). Yeterli aksiyonu olmayan beceri 0 gösterilir.</p>
+        <div class="plot tall"><canvas id="c-radar"></canvas></div>
+      </div>
+      <div class="card">
+        <h2>Sayılar: sideout ve break</h2>
+        <p class="sub">Set başına sayı</p>
+        <div class="plot"><canvas id="c-points"></canvas></div>
+        <h2 class="gap">Becerilerde pozitif %</h2>
+        <p class="sub"># ve + değerlendirmelerin payı</p>
+        <div class="plot"><canvas id="c-skills"></canvas></div>
+      </div>
+      <div class="card wide">
+        <h2>Sayısal kıyaslama</h2>
+        <p class="sub">Kalın yazılan değer o satırda daha iyi olandır</p>
+        <div class="scroll"><table id="c-table"></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAKIM KARŞILAŞTIRMA -->
+  <section id="tab-team" hidden>
+    <div class="filters">
+      <label>Görünüm
+        <select id="t-mode"><option value="two">İki takım</option><option value="all">Tüm takımlar</option></select>
+      </label>
+      <span id="t-two-filters" class="inline">
+        <label><span><i class="sw a"></i>Takım A</span> <select id="t-a"></select></label>
+        <label><span><i class="sw b"></i>Takım B</span> <select id="t-b"></select></label>
+        <label>Kapsam
+          <select id="t-scope"><option value="all">Tüm maçlar</option><option value="h2h">Sadece aralarındaki maçlar</option></select>
+        </label>
+      </span>
+      <span id="t-all-filters" class="inline" hidden>
+        <label>Beceri <select id="t-skill"></select></label>
+        <label>Ölçü
+          <select id="t-metric">
+            <option value="eff">Verim %</option><option value="positive">Pozitif %</option>
+            <option value="perfect">Mükemmel %</option><option value="error">Hata %</option>
+          </select>
+        </label>
+      </span>
+    </div>
+
+    <div id="t-two" class="grid">
+      <div class="card">
+        <h2>Sideout ve break point yüzdesi</h2>
+        <p class="sub">Sideout: servis karşılarken kazanılan ralliler. Break: servis atarken kazanılan ralliler.</p>
+        <div class="plot"><canvas id="t-sobp"></canvas></div>
+      </div>
+      <div class="card">
+        <h2>Becerilerde verim %</h2>
+        <p class="sub">(# − hata) / toplam</p>
+        <div class="plot"><canvas id="t-skills"></canvas></div>
+      </div>
+      <div class="card wide">
+        <h2>Sayısal karşılaştırma</h2>
+        <p class="sub" id="t-two-sub"></p>
+        <div class="scroll"><table id="t-two-table"></table></div>
+      </div>
+    </div>
+
+    <div id="t-all" class="grid" hidden>
+      <div class="card">
+        <h2>Sideout %</h2>
+        <p class="sub">Servis karşılarken kazanılan rallilerin oranı</p>
+        <div class="plot"><canvas id="t-so"></canvas></div>
+      </div>
+      <div class="card">
+        <h2>Break point %</h2>
+        <p class="sub">Servis atarken kazanılan rallilerin oranı</p>
+        <div class="plot"><canvas id="t-bp"></canvas></div>
+      </div>
+      <div class="card wide">
+        <h2 id="t-rank-title"></h2>
+        <p class="sub">Seçilen beceri ve ölçüye göre takım sıralaması</p>
+        <div class="plot"><canvas id="t-rank"></canvas></div>
+      </div>
+      <div class="card wide">
+        <h2>Tüm takımlar tablosu</h2>
+        <p class="sub">Sideout ve break sayıları oyuncuların doğrudan kazandırdığı sayılardır (as, hücum, blok)</p>
+        <div class="scroll"><table id="t-all-table"></table></div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer>Gösterilen veriler örnek scout verisidir (6 takım, 30 maç).</footer>
+
+<script src="vendor/chart.umd.js"></script>
+<script src="js/stats.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface: #fcfcfb; --border: rgba(11, 11, 11, 0.1);
+  --text: #0b0b0b; --text-2: #52514e; --muted: #898781; --grid: #e1e0d9; --axis: #c3c2b7;
+  --a: #2a78d6; --b: #eb6834;          /* oyuncu/takım A ve B */
+  --so: #1baf7a; --bp: #6250d6;        /* sideout ve break */
+  /* değerlendirme skalası: # + ! - / = (mavi → gri → kırmızı) */
+  --ev1: #1c5cab; --ev2: #6da7ec; --ev3: #d5d3cb; --ev4: #f0b4b0; --ev5: #e66767; --ev6: #b02a2a;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --border: rgba(255, 255, 255, 0.1);
+    --text: #f0efec; --text-2: #c3c2b7; --muted: #898781; --grid: #2c2c2a; --axis: #383835;
+    --a: #3987e5; --b: #d95926; --so: #199e70; --bp: #9085e9;
+    --ev1: #5598e7; --ev2: #256abf; --ev3: #4a4a46; --ev4: #8e3a3a; --ev5: #d24f4f; --ev6: #f08a8a;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--text); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+header { padding: 16px 16px 0; max-width: 1200px; margin: 0 auto; }
+h1 { font-size: 20px; margin: 0 0 12px; }
+h1 span { font-weight: 400; color: var(--text-2); font-size: 14px; margin-left: 8px; }
+nav { display: flex; gap: 4px; border-bottom: 1px solid var(--border); overflow-x: auto; }
+nav button { font: inherit; background: none; border: 0; border-bottom: 2px solid transparent; padding: 8px 12px; color: var(--text-2); cursor: pointer; white-space: nowrap; }
+nav button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--a); font-weight: 600; }
+main { max-width: 1200px; margin: 0 auto; padding: 16px; }
+footer { max-width: 1200px; margin: 0 auto; padding: 0 16px 24px; color: var(--muted); font-size: 12px; }
+
+.filters { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: flex-end; margin-bottom: 16px; }
+.filters label { min-width: 0; display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text-2); }
+.filters .inline { display: contents; }
+.filters [hidden] { display: none; }
+fieldset { display: flex; flex-wrap: wrap; min-width: 0; gap: 12px; border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px 10px; margin: 0; }
+legend { font-size: 12px; color: var(--text-2); padding: 0 4px; }
+select { font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--axis); border-radius: 6px; padding: 6px 8px; max-width: 100%; }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+.sw.a { background: var(--a); } .sw.b { background: var(--b); }
+.sw.so { background: var(--so); } .sw.bp { background: var(--bp); }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.tile { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+.tile .l { font-size: 12px; color: var(--text-2); }
+.tile .v { font-size: 26px; font-weight: 600; line-height: 1.2; }
+.tile .d { font-size: 12px; color: var(--muted); }
+
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.grid[hidden] { display: none; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; min-width: 0; }
+.card.wide { grid-column: 1 / -1; }
+h2 { font-size: 15px; margin: 0; }
+h2.gap { margin-top: 20px; }
+.sub { margin: 2px 0 12px; font-size: 12px; color: var(--text-2); }
+.plot { position: relative; height: 260px; }
+.plot.tall { height: 420px; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { padding: 6px 10px; text-align: right; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+th { font-size: 12px; font-weight: 600; color: var(--text-2); }
+th:first-child, td:first-child { text-align: left; }
+tr.sel td { background: color-mix(in srgb, var(--a) 10%, transparent); }
+td b { font-weight: 700; }
+
+@media (max-width: 800px) { .grid { grid-template-columns: minmax(0, 1fr); } }
