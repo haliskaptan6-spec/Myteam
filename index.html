@@ -3377,36 +3377,30 @@ out.push({g:x.id+"|"+a.st+"|"+a.tm,no:a.no,cb:a.cb||"?",ev:a.ev,sz:a.sz||"",ez:a
 var P=hmPts(out);out.forEach(function(a,i){a.p=P[i];
 if(a.p&&a.p.b&&!a.p.c){var w=/[A-D]/.test(a.sb)?24:52,fx=Math.sin((i+1)*12.9898)*43758.5453,fy=Math.sin((i+1)*78.233)*43758.5453;a.p.b=[Math.min(514,Math.max(166,a.p.b[0]+((fx-Math.floor(fx))*2-1)*w)),Math.min(794,Math.max(446,a.p.b[1]+((fy-Math.floor(fy))*2-1)*w))];}});
 return out;}
-var HMC=["#2b5fd9","#29b6d6","#3cc45a","#f7e03c","#f58a1f","#d7191c"]; /* az -> çok: DataVolley tarzı mavi, yeşil, sarı, kırmızı; yumuşak geçişli */
+var HMC=["#8f72c4","#5a63d6","#37c04a","#f2ee1f","#f7941d","#e3201b"]; /* az -> çok: DataVolley'deki gibi mor, mavi, yeşil, sarı, kırmızı */
+/* Her atak, düştüğü yerde küçük ve kenarı eriyen bir leke çizer; lekeler üst üste bindikçe koyulaşır ve süzgeç (hmblur) koyuluğu renge çevirir. Tek atak yeşil, üst üste binenler sarı ve kırmızı olur. */
 function hmHeat(L){
-var G=24,cs=15,d=new Float32Array(G*G),any=false,mx=0,i;
-L.forEach(function(a){if(!a.p||!a.p.b)return;any=true;var b=a.p.b,k=1/(2*34*34);
-for(var r=0;r<G;r++){var y=440+r*cs+cs/2-b[1],yy=y*y;for(var c=0;c<G;c++){var x=160+c*cs+cs/2-b[0];d[r*G+c]+=Math.exp(-(x*x+yy)*k);}}});
-if(!any)return "";
-for(i=0;i<d.length;i++)if(d[i]>mx)mx=d[i];
-var h='<g clip-path="url(#hmclip)"><g filter="url(#hmblur)">';
-for(i=0;i<d.length;i++){var t=Math.pow(d[i]/mx,0.75);if(t<0.02)continue;h+='<rect x="'+(160+(i%G)*cs)+'" y="'+(440+Math.floor(i/G)*cs)+'" width="'+(cs+0.5)+'" height="'+(cs+0.5)+'" fill="#000" fill-opacity="'+t.toFixed(3)+'"/>';}
-return h+'</g></g>';}
+var loc=L.filter(function(a){return a.p&&a.p.b;});if(!loc.length)return "";
+var op=Math.min(0.38,Math.max(0.17,0.38*Math.sqrt(12/loc.length))).toFixed(3);
+return '<g filter="url(#hmblur)">'+loc.map(function(a){return '<circle cx="'+a.p.b[0].toFixed(1)+'" cy="'+a.p.b[1].toFixed(1)+'" r="27" fill="url(#hmg)" fill-opacity="'+op+'"/>';}).join("")+'</g>';}
 function hmCourt(L,dir,lab){
-var loc=L.filter(function(a){return a.p&&a.p.b;}),h='<svg viewBox="'+(dir?"140 60 400 760":"140 424 400 392")+'" role="img" aria-label="'+esc(lab)+' atak ısı haritası">';
-h+='<rect x="160" y="'+(dir?80:440)+'" width="360" height="'+(dir?720:360)+'" fill="var(--panel)" stroke="var(--line)" stroke-width="2"/>'+hmHeat(L);
-[280,400].forEach(function(x){h+='<line x1="'+x+'" y1="'+(dir?80:440)+'" x2="'+x+'" y2="800" stroke="var(--line)"/>';});
-(dir?[200,680]:[680]).forEach(function(y){h+='<line x1="160" y1="'+y+'" x2="520" y2="'+y+'" stroke="var(--line)"/>';});
-(dir?[320,560]:[560]).forEach(function(y){h+='<line x1="160" y1="'+y+'" x2="520" y2="'+y+'" stroke="var(--line)" stroke-dasharray="6 5"/>';});
-h+='<line x1="148" y1="440" x2="532" y2="440" stroke="var(--text)" stroke-width="5"/>';
-if(!dir)loc.forEach(function(a){var B=a.p.b;h+='<circle cx="'+B[0].toFixed(1)+'" cy="'+B[1].toFixed(1)+'" r="4.5" fill="#0b141c" stroke="#fff" stroke-width="1.5"><title>'+esc(a.no+" "+a.cb+" "+a.ev)+'</title></circle>';});
+var loc=L.filter(function(a){return a.p&&a.p.b;}),W='stroke="#fff"',h='<svg viewBox="120 50 440 780" role="img" aria-label="'+esc(lab)+' atak ısı haritası" style="border-radius:6px">';
+h+='<rect x="120" y="50" width="440" height="780" fill="#2f6fbe"/><rect x="160" y="80" width="360" height="720" fill="#f5c38b" '+W+' stroke-width="3"/>';
+[320,560].forEach(function(y){h+='<line x1="146" y1="'+y+'" x2="534" y2="'+y+'" '+W+' stroke-width="2"/>';});
+[280,400].forEach(function(x){h+='<line x1="'+x+'" y1="560" x2="'+x+'" y2="800" '+W+' stroke-width="1.5" stroke-dasharray="3 4"/>';});
+h+='<line x1="160" y1="680" x2="520" y2="680" '+W+' stroke-width="1.5" stroke-dasharray="3 4"/><line x1="160" y1="440" x2="520" y2="440" '+W+' stroke-width="5"/>'+hmHeat(L);
 if(dir){var thin=loc.length>60;loc.forEach(function(a){if(!a.p.a)return;var c=RC[a.ev]||"#888780",A=a.p.a,B=a.p.b;
-h+=(thin?'<line x1="'+A[0].toFixed(1)+'" y1="'+A[1].toFixed(1)+'" x2="'+B[0].toFixed(1)+'" y2="'+B[1].toFixed(1)+'" stroke="'+c+'" stroke-width="2" stroke-opacity="0.55" stroke-linecap="round"/>':rArrow(A,B,c,3,"H"))+'<circle cx="'+B[0].toFixed(1)+'" cy="'+B[1].toFixed(1)+'" r="'+(thin?3:4.5)+'" fill="'+c+'"><title>'+esc(a.no+" "+a.cb+" "+a.ev)+'</title></circle>';});}
+h+=(thin?'<line x1="'+A[0].toFixed(1)+'" y1="'+A[1].toFixed(1)+'" x2="'+B[0].toFixed(1)+'" y2="'+B[1].toFixed(1)+'" stroke="'+c+'" stroke-width="2" stroke-opacity="0.6" stroke-linecap="round"/>':rArrow(A,B,c,3,"H"))+'<circle cx="'+B[0].toFixed(1)+'" cy="'+B[1].toFixed(1)+'" r="'+(thin?3:4.5)+'" fill="'+c+'"><title>'+esc(a.no+" "+a.cb+" "+a.ev)+'</title></circle>';});}
 return h+'</svg>';}
 function hmCard(L,lab,dir){
-var n=L.length,k=0,e=0;L.forEach(function(a){if(a.ev==="#")k++;if(a.ev==="="||a.ev==="/")e++;});
+var n=L.length,k=0,e=0,bl=0;L.forEach(function(a){if(a.ev==="#")k++;if(a.ev==="="||a.ev==="/")e++;if(a.ev==="/")bl++;});
 var un=L.filter(function(a){return !a.p||!a.p.b;}).length;
 var ou=L.filter(function(a){return a.p&&a.p.out;}).length,nt=[];if(ou)nt.push(ou+" atak saha dışına düştü");if(un)nt.push(un+" atağın bittiği yer scoutta yok");
-return '<div class="pac"><h3 style="margin-bottom:2px">'+esc(lab)+'</h3><p class="lbl" style="margin:0 0 8px;font-size:12px">'+n+' atak · sayı %'+rvF(rvPct(k,n))+' · verim %'+rvF(rvPct(k-e,n))+'</p>'+hmCourt(L,dir,lab)+(nt.length?'<p class="lbl" style="margin:6px 0 0;font-size:12px">'+nt.join(". ")+'.</p>':'')+'</div>';}
+return '<div class="pac"><h3 style="margin-bottom:2px">'+esc(lab)+'</h3><p class="lbl" style="margin:0 0 8px;font-size:12px">'+n+' atak · sayı %'+rvF(rvPct(k,n))+' · verim %'+rvF(rvPct(k-e,n))+' · hata %'+rvF(rvPct(e-bl,n))+' · blok %'+rvF(rvPct(bl,n))+'</p>'+hmCourt(L,dir,lab)+(nt.length?'<p class="lbl" style="margin:6px 0 0;font-size:12px">'+nt.join(". ")+'.</p>':'')+'</div>';}
 function paHeat(){
 var I=paIndex(),TA=I.teams[PA.a.t],H=PA.hm;
 var all=I.items.filter(function(x){return TA.ids[x.id]!==undefined;}).sort(function(a,b){return (a.dt||"")<(b.dt||"")?-1:1;}),its=all.filter(function(x){return !rvOn(PA.ms)||PA.ms[x.id];});
-var h='<svg width="0" height="0" style="position:absolute;width:0;height:0;border:0;overflow:hidden" aria-hidden="true"><defs><filter id="hmblur" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="8"/><feColorMatrix type="matrix" values="0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0"/><feComponentTransfer><feFuncR type="table" tableValues="0.169 0.169 0.161 0.235 0.969 0.961 0.843"/><feFuncG type="table" tableValues="0.373 0.373 0.714 0.769 0.878 0.541 0.098"/><feFuncB type="table" tableValues="0.851 0.851 0.839 0.353 0.235 0.122 0.110"/><feFuncA type="table" tableValues="0 0.7 0.82 0.88 0.92 0.96 1"/></feComponentTransfer></filter><clipPath id="hmclip"><rect x="160" y="440" width="360" height="360"/></clipPath></defs></svg>';
+var h='<svg width="0" height="0" style="position:absolute;width:0;height:0;border:0;overflow:hidden" aria-hidden="true"><defs><filter id="hmblur" filterUnits="userSpaceOnUse" x="120" y="50" width="440" height="780" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0"/><feComponentTransfer><feFuncR type="table" tableValues="0.561 0.561 0.353 0.216 0.271 0.651 0.949 0.976 0.969 0.933 0.890"/><feFuncG type="table" tableValues="0.447 0.447 0.388 0.753 0.851 0.902 0.933 0.761 0.580 0.353 0.125"/><feFuncB type="table" tableValues="0.769 0.769 0.839 0.290 0.212 0.165 0.122 0.114 0.114 0.110 0.106"/><feFuncA type="table" tableValues="0 0.55 0.7 0.88 0.94 0.97 1 1 1 1 1"/></feComponentTransfer></filter><radialGradient id="hmg"><stop offset="0" stop-color="#000" stop-opacity="1"/><stop offset="0.45" stop-color="#000" stop-opacity="0.7"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient></defs></svg>';
 if(!hmLoad(its))return h+'<div class="empty">Scout dosyaları okunuyor...</div>';
 var L0=hmList(its,TA.ids),byNo={};L0.forEach(function(a){byNo[a.no]=(byNo[a.no]||0)+1;});
 if(H.no&&!byNo[H.no])H.no="";
@@ -3426,10 +3420,10 @@ var who=H.no?pn(H.no):TA.name,gs=[];
 if(!H.sp)gs=[{lab:who+(rvOn(H.cb)?" · "+Object.keys(H.cb).join(", "):""),L:L}];
 else{var m={};L.forEach(function(a){var k=a[H.sp];(m[k]=m[k]||[]).push(a);});gs=Object.keys(m).map(function(k){return {lab:H.sp==="cb"?k+(H.no?"":" · "+TA.name):pn(k),L:m[k]};}).sort(function(a,b){return b.L.length-a.L.length;});}
 var more=gs.length>16?gs.length-16:0;gs=gs.slice(0,16);
-h+='<div class="paleg" style="margin-top:10px"><span>Atak yoğunluğu: az <i style="width:110px;background:linear-gradient(90deg,'+HMC.join(",")+')"></i> çok</span><span>Her nokta bir atağın düştüğü yer</span>'+(H.dir?RVE.map(function(e){return '<span><i style="background:'+RC[e]+'"></i>'+e+'</span>';}).join(""):'')+'</div>';
-h+='<div class="pag" style="grid-template-columns:repeat(auto-fill,minmax('+(gs.length>1?230:300)+'px,'+(gs.length>1?"1fr":"460px")+'))">'+gs.map(function(g){return hmCard(g.L,g.lab,H.dir);}).join("")+'</div>';
+h+='<div class="paleg" style="margin-top:10px"><span>Atak yoğunluğu: az <i style="width:110px;background:linear-gradient(90deg,'+HMC.join(",")+')"></i> çok</span>'+(H.dir?RVE.map(function(e){return '<span><i style="background:'+RC[e]+'"></i>'+e+'</span>';}).join(""):'')+'</div>';
+h+='<div class="pag" style="grid-template-columns:repeat(auto-fill,minmax('+(gs.length>1?210:260)+'px,'+(gs.length>1?"1fr":"380px")+'))">'+gs.map(function(g){return hmCard(g.L,g.lab,H.dir);}).join("")+'</div>';
 var nc=L.filter(function(a){return a.p&&a.p.c;}).length,nz=L.filter(function(a){return a.p&&a.p.b&&!a.p.c;}).length,old=its.filter(function(x){return !(HMX[x.id]||{}).ax;}).length;
-h+='<p class="lbl" style="margin-top:10px;font-size:12px">'+(more?'En çok atak içeren 16 harita gösteriliyor, '+more+' tanesi gizlendi; kod ya da oyuncu seçerek daralt. ':'')+'Konum: '+nc+' atak scouttaki koordinattan, '+nz+' atak bölge ve alt bölge numarasından (koordinat girilmemiş ataklarda nokta, scouttaki bölgenin ya da alt bölgenin içine dağıtılarak konur; tam yeri bilinmez). Her haritanın renk ölçeği kendi içindedir.'+(old?' '+old+' maçın scout dosyası bu cihazda saklı değil; o maçlarda yalnızca bölge numarası kullanıldı. SCOUTLAR bölümünden dosyayı yeniden yüklersen koordinatlar da gelir.':'')+'</p>';
+h+='<p class="lbl" style="margin-top:10px;font-size:12px">'+(more?'En çok atak içeren 16 harita gösteriliyor, '+more+' tanesi gizlendi; kod ya da oyuncu seçerek daralt. ':'')+'Konum: '+nc+' atak scouttaki koordinattan, '+nz+' atak bölge ve alt bölge numarasından (koordinat girilmemiş ataklar, scouttaki bölgenin ya da alt bölgenin içine dağıtılarak konur; tam yeri bilinmez).'+(old?' '+old+' maçın scout dosyası bu cihazda saklı değil; o maçlarda yalnızca bölge numarası kullanıldı. SCOUTLAR bölümünden dosyayı yeniden yüklersen koordinatlar da gelir.':'')+'</p>';
 return h;}
 function paRender(){
 var el=$("pa-body");if(!el)return;
