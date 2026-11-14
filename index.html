@@ -3384,11 +3384,11 @@ var loc=L.filter(function(a){return a.p&&a.p.b;});if(!loc.length)return "";
 var op=Math.min(0.38,Math.max(0.17,0.38*Math.sqrt(12/loc.length))).toFixed(3);
 return '<g filter="url(#hmblur)">'+loc.map(function(a){return '<circle cx="'+a.p.b[0].toFixed(1)+'" cy="'+a.p.b[1].toFixed(1)+'" r="27" fill="url(#hmg)" fill-opacity="'+op+'"/>';}).join("")+'</g>';}
 function hmCourt(L,dir,lab){
-var loc=L.filter(function(a){return a.p&&a.p.b;}),W='stroke="#fff"',h='<svg viewBox="120 50 440 780" role="img" aria-label="'+esc(lab)+' atak ısı haritası" style="border-radius:6px">';
-h+='<rect x="120" y="50" width="440" height="780" fill="#2f6fbe"/><rect x="160" y="80" width="360" height="720" fill="#f5c38b" '+W+' stroke-width="3"/>';
-[320,560].forEach(function(y){h+='<line x1="146" y1="'+y+'" x2="534" y2="'+y+'" '+W+' stroke-width="2"/>';});
-[280,400].forEach(function(x){h+='<line x1="'+x+'" y1="560" x2="'+x+'" y2="800" '+W+' stroke-width="1.5" stroke-dasharray="3 4"/>';});
-h+='<line x1="160" y1="680" x2="520" y2="680" '+W+' stroke-width="1.5" stroke-dasharray="3 4"/><line x1="160" y1="440" x2="520" y2="440" '+W+' stroke-width="5"/>'+hmHeat(L);
+var loc=L.filter(function(a){return a.p&&a.p.b;}),W='stroke="var(--line)"',top=dir?80:440,h='<svg viewBox="'+(dir?"120 50 440 780":"120 424 440 406")+'" role="img" aria-label="'+esc(lab)+' atak ısı haritası">';
+h+='<rect x="160" y="'+top+'" width="360" height="'+(800-top)+'" fill="#fff" '+W+' stroke-width="2"/>';
+(dir?[320,560]:[560]).forEach(function(y){h+='<line x1="160" y1="'+y+'" x2="520" y2="'+y+'" '+W+' stroke-width="1.5"/>';});
+[280,400].forEach(function(x){h+='<line x1="'+x+'" y1="440" x2="'+x+'" y2="800" '+W+' stroke-dasharray="3 4"/>';});
+h+='<line x1="160" y1="680" x2="520" y2="680" '+W+' stroke-dasharray="3 4"/><line x1="148" y1="440" x2="532" y2="440" stroke="var(--text)" stroke-width="5"/>'+hmHeat(L);
 if(dir){var thin=loc.length>60;loc.forEach(function(a){if(!a.p.a)return;var c=RC[a.ev]||"#888780",A=a.p.a,B=a.p.b;
 h+=(thin?'<line x1="'+A[0].toFixed(1)+'" y1="'+A[1].toFixed(1)+'" x2="'+B[0].toFixed(1)+'" y2="'+B[1].toFixed(1)+'" stroke="'+c+'" stroke-width="2" stroke-opacity="0.6" stroke-linecap="round"/>':rArrow(A,B,c,3,"H"))+'<circle cx="'+B[0].toFixed(1)+'" cy="'+B[1].toFixed(1)+'" r="'+(thin?3:4.5)+'" fill="'+c+'"><title>'+esc(a.no+" "+a.cb+" "+a.ev)+'</title></circle>';});}
 return h+'</svg>';}
