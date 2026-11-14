@@ -3360,7 +3360,8 @@ h+='<h2 class="hsub">Tüm takımlar tablosu</h2><div class="tw"><table class="rv
 L.slice().sort(function(a,b){return (paMet("so")[2](b.o)||0)-(paMet("so")[2](a.o)||0);}).forEach(function(t){h+='<tr><th>'+esc(t.name)+'</th><td>'+t.o.nm+'</td><td>'+t.o.ns+'</td>'+cols.map(function(k){var q=paMet(k);return '<td>'+paFmt(q[2](t.o),q[3])+'</td>';}).join("")+'</tr>';});
 return h+'</tbody></table></div><p class="lbl" style="margin-top:10px;font-size:12px">Yüklü tüm scoutlar kullanılır. Sideout %: servis karşılarken kazanılan ralliler. Break point %: servis atarken kazanılan ralliler. Maç sayısı az olan takımların değerleri tek maça dayanır.</p>';}
 /* ---- Atak ısı haritası ---- */
-var HMX={},HMP=0,HMQ=[]; /* HMX[id]={s:ac metni, ax:ek alanlar ya da null}; ham dosyalar IndexedDB'den okunur */
+var HMX={},HMP=0,HMQ=[],CBA={XS:"XX",WS:"WW"},HML={}; /* CBA: aynı sayılan atak kodları; HML: birleşik kodun ekranda görünen adı */
+function hmL(k){return HML[k]||k;} /* HMX[id]={s:ac metni, ax:ek alanlar ya da null}; ham dosyalar IndexedDB'den okunur */
 function hmLoad(items,cb){
 var need=items.filter(function(x){var c=HMX[x.id];return !c||c.s!==x.ac;});
 if(!need.length)return true;
@@ -3373,10 +3374,12 @@ if(r&&r.buf){try{var o=rvParse(r.buf,r.name||x.name);if(o&&o.ax&&o.ac&&o.ac.spli
 HMX[x.id]={s:x.ac,ax:ax};if(--HMP===0){var q=HMQ;HMQ=[];q.forEach(function(f){setTimeout(f,0);});}});});
 return false;}
 function hmList(items,ti){
-var out=[];
+var out=[],lab={};
 items.forEach(function(x){var A=sdActs(x),ax=(HMX[x.id]||{}).ax,me=ti[x.id],srv=null,cst=null;
 A.forEach(function(a,i){if(a.sk==="S"){srv=a.tm;cst=a.st;}if(a.sk!=="A"||a.tm!==me)return;var e=ax?ax[i]:null;
-out.push({g:x.id+"|"+a.st+"|"+a.tm,no:a.no,cb:a.cb||"?",ev:a.ev,sz:a.sz||"",ez:a.ez||"",sb:e?e[0]:"",cs:e?e[1]:0,ce:e?e[2]:0,rot:e?(e[3]||0):0,so:srv!==null&&cst===a.st&&srv!==a.tm});});});
+var raw=a.cb||"?",ck=CBA[raw]||raw;(lab[ck]=lab[ck]||{})[raw]=1;
+out.push({g:x.id+"|"+a.st+"|"+a.tm,no:a.no,cb:ck,ev:a.ev,sz:a.sz||"",ez:a.ez||"",sb:e?e[0]:"",cs:e?e[1]:0,ce:e?e[2]:0,rot:e?(e[3]||0):0,so:srv!==null&&cst===a.st&&srv!==a.tm});});});
+HML={};Object.keys(lab).forEach(function(k){HML[k]=Object.keys(lab[k]).sort().join(" / ");});
 var P=hmPts(out);out.forEach(function(a,i){a.p=P[i];
 if(a.p&&a.p.b&&!a.p.c){var w=/[A-D]/.test(a.sb)?24:52,fx=Math.sin((i+1)*12.9898)*43758.5453,fy=Math.sin((i+1)*78.233)*43758.5453;a.p.b=[Math.min(514,Math.max(166,a.p.b[0]+((fx-Math.floor(fx))*2-1)*w)),Math.min(794,Math.max(446,a.p.b[1]+((fy-Math.floor(fy))*2-1)*w))];}});
 return out;}
@@ -3394,7 +3397,7 @@ var loc=L.filter(function(a){return a.p&&a.p.b;}),W='stroke="'+cl+'"',top=dir?80
 [280,400].forEach(function(x){h+='<line x1="'+x+'" y1="440" x2="'+x+'" y2="800" '+W+' stroke-dasharray="3 4"/>';});
 h+='<line x1="160" y1="680" x2="520" y2="680" '+W+' stroke-dasharray="3 4"/><line x1="148" y1="440" x2="532" y2="440" stroke="'+ct+'" stroke-width="5"/>'+hmHeat(L);
 if(dir){var thin=loc.length>60;loc.forEach(function(a){if(!a.p.a)return;var c=RC[a.ev]||"#888780",A=a.p.a,B=a.p.b;
-h+=(thin?'<line x1="'+A[0].toFixed(1)+'" y1="'+A[1].toFixed(1)+'" x2="'+B[0].toFixed(1)+'" y2="'+B[1].toFixed(1)+'" stroke="'+c+'" stroke-width="2" stroke-opacity="0.6" stroke-linecap="round"/>':rArrow(A,B,c,3,"H"))+'<circle cx="'+B[0].toFixed(1)+'" cy="'+B[1].toFixed(1)+'" r="'+(thin?3:4.5)+'" fill="'+c+'"><title>'+esc(a.no+" "+a.cb+" "+a.ev)+'</title></circle>';});}
+h+=(thin?'<line x1="'+A[0].toFixed(1)+'" y1="'+A[1].toFixed(1)+'" x2="'+B[0].toFixed(1)+'" y2="'+B[1].toFixed(1)+'" stroke="'+c+'" stroke-width="2" stroke-opacity="0.6" stroke-linecap="round"/>':rArrow(A,B,c,3,"H"))+'<circle cx="'+B[0].toFixed(1)+'" cy="'+B[1].toFixed(1)+'" r="'+(thin?3:4.5)+'" fill="'+c+'"><title>'+esc(a.no+" "+hmL(a.cb)+" "+a.ev)+'</title></circle>';});}
 return h;}
 function hmCard(L,lab,dir){
 var n=L.length,k=0,e=0,bl=0;L.forEach(function(a){if(a.ev==="#")k++;if(a.ev==="="||a.ev==="/")e++;if(a.ev==="/")bl++;});
@@ -3415,14 +3418,14 @@ h+='<div class="row" style="margin-top:8px"><span class="lbl">Maçlar ('+esc(TA.
 var L1=L0.filter(function(a){return !H.no||a.no===H.no;}),cc={};L1.forEach(function(a){cc[a.cb]=(cc[a.cb]||0)+1;});
 var codes=Object.keys(cc).sort(function(a,b){return cc[b]-cc[a]||(a<b?-1:1);});
 Object.keys(H.cb).forEach(function(k){if(!cc[k])delete H.cb[k];});
-h+='<div class="row" style="margin-top:8px"><span class="lbl">Atak kodu</span><button class="rb2'+(!rvOn(H.cb)?" on":"")+'" data-hmc="ALL">Tümü</button>'+codes.map(function(k){return '<button class="rb2'+(H.cb[k]?" on":"")+'" data-hmc="'+esc(k)+'">'+esc(k)+' <small>'+cc[k]+'</small></button>';}).join("")+'</div>';
+h+='<div class="row" style="margin-top:8px"><span class="lbl">Atak kodu</span><button class="rb2'+(!rvOn(H.cb)?" on":"")+'" data-hmc="ALL">Tümü</button>'+codes.map(function(k){return '<button class="rb2'+(H.cb[k]?" on":"")+'" data-hmc="'+esc(k)+'">'+esc(hmL(k))+' <small>'+cc[k]+'</small></button>';}).join("")+'</div>';
 h+='<div class="row" style="margin-top:8px"><span class="lbl">Sonuç</span><button class="rb2'+(!rvOn(H.ev)?" on":"")+'" data-hme="ALL">Tümü</button>'+RVE.map(function(e){return '<button class="rb2'+(H.ev[e]?" on":"")+'" data-hme="'+e+'"><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+RC[e]+';margin-right:5px"></i>'+e+'</button>';}).join("")+'</div>';
 h+='<div class="row" style="margin-top:8px"><span class="lbl">Haritalar</span>'+[["","Tek harita"],["cb","Kod başına ayrı"],["no","Oyuncu başına ayrı"]].map(function(q){return '<button class="rb2'+(H.sp===q[0]?" on":"")+'" data-hmsp="'+q[0]+'">'+q[1]+'</button>';}).join("")+'<button class="rb2'+(H.dir?" on":"")+'" data-hmdir="1" style="margin-left:12px">Yönleri çiz</button></div>';
 var L=L1.filter(function(a){return (!rvOn(H.cb)||H.cb[a.cb])&&(!rvOn(H.ev)||H.ev[a.ev]);});
 if(!L.length)return h+'<div class="empty" style="margin-top:10px">Bu seçimde atak yok.</div>';
 var who=H.no?pn(H.no):TA.name,gs=[];
-if(!H.sp)gs=[{lab:who+(rvOn(H.cb)?" · "+Object.keys(H.cb).join(", "):""),L:L}];
-else{var m={};L.forEach(function(a){var k=a[H.sp];(m[k]=m[k]||[]).push(a);});gs=Object.keys(m).map(function(k){return {lab:H.sp==="cb"?k+(H.no?"":" · "+TA.name):pn(k),L:m[k]};}).sort(function(a,b){return b.L.length-a.L.length;});}
+if(!H.sp)gs=[{lab:who+(rvOn(H.cb)?" · "+Object.keys(H.cb).map(hmL).join(", "):""),L:L}];
+else{var m={};L.forEach(function(a){var k=a[H.sp];(m[k]=m[k]||[]).push(a);});gs=Object.keys(m).map(function(k){return {lab:H.sp==="cb"?hmL(k)+(H.no?"":" · "+TA.name):pn(k),L:m[k]};}).sort(function(a,b){return b.L.length-a.L.length;});}
 var more=gs.length>16?gs.length-16:0;gs=gs.slice(0,16);
 h+='<div class="paleg" style="margin-top:10px"><span>Atak yoğunluğu: az <i style="width:110px;background:linear-gradient(90deg,'+HMC.join(",")+')"></i> çok</span>'+(H.dir?RVE.map(function(e){return '<span><i style="background:'+RC[e]+'"></i>'+e+'</span>';}).join(""):'')+'</div>';
 h+='<div class="pag" style="grid-template-columns:repeat(auto-fill,minmax('+(gs.length>1?210:260)+'px,'+(gs.length>1?"1fr":"380px")+'))">'+gs.map(function(g){return hmCard(g.L,g.lab,H.dir);}).join("")+'</div>';
@@ -3465,7 +3468,7 @@ var F=hdPick(D.L),cc={};F.forEach(function(a){cc[a.cb]=(cc[a.cb]||0)+1;});
 var codes=Object.keys(cc).sort(function(a,b){return cc[b]-cc[a]||(a<b?-1:1);}),any=false;
 [0,1].forEach(function(k){Object.keys(HD.cb[k]).forEach(function(c){if(!cc[c])delete HD.cb[k][c];});
 var n=0;Object.keys(HD.cb[k]).forEach(function(c){n+=cc[c];});if(n)any=true;
-h+='<div style="margin-top:10px"><b>'+HKL[k]+' kutusu</b> <span class="lbl">'+(n?n+' atak seçildi':'kod seçmezsen bu kutu değişmez')+'</span><div class="row" style="margin-top:4px">'+(codes.length?codes.map(function(c){return '<button class="rb2'+(HD.cb[k][c]?" on":"")+'" data-hdc="'+k+':'+esc(c)+'">'+esc(c)+' <small>'+cc[c]+'</small></button>';}).join(""):'<span class="lbl">Bu seçimde atak yok.</span>')+'</div></div>';});
+h+='<div style="margin-top:10px"><b>'+HKL[k]+' kutusu</b> <span class="lbl">'+(n?n+' atak seçildi':'kod seçmezsen bu kutu değişmez')+'</span><div class="row" style="margin-top:4px">'+(codes.length?codes.map(function(c){return '<button class="rb2'+(HD.cb[k][c]?" on":"")+'" data-hdc="'+k+':'+esc(c)+'">'+esc(hmL(c))+' <small>'+cc[c]+'</small></button>';}).join(""):'<span class="lbl">Bu seçimde atak yok.</span>')+'</div></div>';});
 if(D.old)h+='<p class="lbl" style="margin:10px 0 0">'+D.old+' maçın scout dosyası bu cihazda saklı değil; o maçlarda pasör pozisyonu ve koordinat okunamıyor. SCOUTLAR bölümünden dosyayı yeniden yükleyebilirsin.</p>';
 h+='<p class="lbl" style="margin:10px 0 0">'+(D.own?'Bu sheet\'e aktardığın '+D.nm+' scout kullanılır.':'Bu sheet\'e bağlı scout dosyası yok; takımın yüklü '+D.nm+' maçının tamamı kullanılır. Scoutu bu sayfaya yeniden aktarırsan yalnızca o kullanılır.')+' Kutuda fotoğraf varsa yenisiyle değişir.</p><div class="row" style="margin-top:12px"><button id="hdok"'+(any?"":" disabled")+'>Kutuya yerleştir</button><button id="hdx">Vazgeç</button></div>';
 d.innerHTML=h;}
@@ -3475,7 +3478,7 @@ var m=RP().hm[HD.i],F=hdPick(D.L),jobs=[],q=D.T.pl[HD.no],nm=(q&&q.name)||"",fai
 [0,1].forEach(function(k){var ks=Object.keys(HD.cb[k]);if(!ks.length)return;var L=F.filter(function(a){return HD.cb[k][a.cb];});if(L.length)jobs.push({k:k,L:L,ks:ks});});
 if(!jobs.length)return;
 var left=jobs.length;
-jobs.forEach(function(j){hmImage(j.L,HD.no+" "+nm,j.ks.join(", ")+(HD.rot?" · P"+R.d.rot:"")+(HD.so?" · sideout":""),function(u){
+jobs.forEach(function(j){hmImage(j.L,HD.no+" "+nm,j.ks.map(hmL).join(", ")+(HD.rot?" · P"+R.d.rot:"")+(HD.so?" · sideout":""),function(u){
 if(u){var old=m[HK[j.k]],nid=uid();IMG[nid]=u;if(imgSave()){m[HK[j.k]]=nid;if(old){delete IMG[old];imgSave();}}else{delete IMG[nid];fail=true;}}else fail=true;
 if(--left===0){m.no=HD.no;if(!m.nm)m.nm=nm;R.d.hmt=HD.t;HD=null;$("hmdlg").close();save();rotRender();$("rerr").textContent=fail?"Isı haritası kaydedilemedi. Tarayıcı belleği dolu olabilir; eski bir fotoğrafı kaldırıp tekrar dene.":"";}});});}
 (function(){
@@ -3983,7 +3986,7 @@ $("tn").value="";$("dlerr").textContent="";dl.showModal();$("tn").focus();
 var CALLSX=["K1","KC","K2","KF","K7","KM","KP","KE"],ALIAS={KN:"KP",K5:"KF",KO:"KE"};
 var und=null,pend=null;
 function msg(t){$("rerr").textContent=t;}
-var COMBO={XX:"4",XC:"4",WW:"2",WC:"2",C1:"kısa",C7:"kurşun",C5:"T.A",C3:"12",C2:"baş",V1:"1",VX:"X",V6:"pipe",VQ:"Q",CC:"CC",VA:"PP",X9:"4"};
+var COMBO={XX:"4",XS:"4",XC:"4",WW:"2",WS:"2",WC:"2",C1:"kısa",C7:"kurşun",C5:"T.A",C3:"12",C2:"baş",V1:"1",VX:"X",V6:"pipe",VQ:"Q",CC:"CC",VA:"PP",X9:"4"};
 function atype(c,f){
 var q12=c.charAt(12);if(q12==="H"||q12==="P"||q12==="T")return q12;var m=/[HPT]/.exec(c.substr(12,3));if(m)return m[0];
 for(var i=1;i<f.length;i++){var t=(f[i]||"").trim();if(/^[HPT][MQUHNO]$/.test(t))return t.charAt(0);}
