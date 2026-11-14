@@ -460,6 +460,7 @@ main{max-width:none!important}
 <button class="mod" id="open-plan"><b>ROTATION PLANNER</b><span>İki takımın rotasyonlarını gir, servis atan ve karşılayan takımı seç, 6 rotasyonun karşılama yerleşimini ve atağa çıkış oklarını sahada gör, oyuncuları sürükleyerek değiştir.</span></button>
 <button class="mod" id="open-dir"><b>ATTACK DIRECTIONS</b><span>Fast ve high toplarda pasör pozisyonuna göre atak yönlerini çiz.</span></button>
 <button class="mod" id="open-rot"><b>ROTATION DETAIL</b><span>Pasör pozisyonu başına side-out analizi: setter call yönleri, heat map fotoğrafları, notlar. A4 yazdır ve 6 sayfalı Excel.</span></button>
+<button class="mod" id="open-hm"><b>HEAT MAPS</b><span>Scouttan atak ısı haritaları: takım, oyuncu, atak kodu ve sonuç seç; haritaları tek ya da kod / oyuncu başına ayrı gör.</span></button>
 </div>
 <div class="qbox" style="margin-top:18px"><b>Yedek</b><p class="lbl" style="margin:4px 0 8px">Tüm çalışmaların (fotoğraflar dahil) tek dosyada. Geliştirme için bana bu dosyayı gönderebilirsin.</p><div class="row"><button id="bk2">Yedek indir</button><button id="bkl2">Yedek yükle</button></div>
 <p class="lbl" style="margin:14px 0 6px"><b>Otomatik yedek</b> – bilgisayarında seçtiğin klasöre her değişiklikten sonra kendiliğinden yazılır (son 14 gün ayrıca saklanır). Tarayıcı verisi silinse bile buradan geri yüklenir.</p>
@@ -2624,6 +2625,7 @@ $("rerr").textContent="";
 download("ROTATION-DETAIL-"+R.name.replace(/[\\\/:*?"<>|\s]+/g,"_")+".xlsx",new Blob([u8],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}),"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 }).catch(function(e){$("rerr").textContent="Excel oluşturulamadı: "+(e&&e.message||e);}).then(function(){b.disabled=false;});
 };
+$("open-hm").onclick=function(){PA.solo=true;PA.mode="h";app.hs="pa";homeRender();save();};
 $("open-rot").onclick=function(){
 dlgKind="rot";$("dlt").textContent="Analiz etmek istediğiniz takımın ismi";
 var d=$("dlg");
@@ -3491,8 +3493,12 @@ $("tab-rot").addEventListener("change",function(e){var t=e.target;if(R&&t.getAtt
 })();
 function paRender(){
 var el=$("pa-body");if(!el)return;
+$("hs-pa").querySelector("h1").textContent=PA.solo&&PA.mode==="h"?"HEAT MAPS":"PLAYER ANALYSIS";
 if(!paFix()){el.innerHTML='<div class="empty">Analiz için önce SCOUTLAR bölümünden scout yükle. Eski sürümle yüklenmiş scoutlarda aksiyon verisi yoktur; aynı dosyayı bir kez yeniden yüklemen yeterli.</div>';return;}
-var I=paIndex(),md=PA.mode,team=md==="t";
+var I=paIndex(),md=PA.mode,team=md==="t",solo=!!PA.solo&&md==="h";
+$("hs-pa").querySelector("h1").textContent=solo?"HEAT MAPS":"PLAYER ANALYSIS";
+if(solo){var nb=$("hnav").querySelectorAll("[data-hs]");for(var ni=0;ni<nb.length;ni++)nb[ni].classList.toggle("on",nb[ni].getAttribute("data-hs")==="sheets");
+el.innerHTML='<div class="row"><button data-hmback="1">Sheetlere dön</button></div>'+paHeat();return;}
 var h='<div class="row"><button class="rb2'+(md==="p"?" on":"")+'" data-pam="p">Oyuncu</button><button class="rb2'+(md==="c"?" on":"")+'" data-pam="c">İki oyuncu kıyasla</button><button class="rb2'+(md==="t"?" on":"")+'" data-pam="t">Takım kıyasla</button><button class="rb2'+(md==="l"?" on":"")+'" data-pam="l">Tüm takımlar</button><button class="rb2'+(md==="h"?" on":"")+'" data-pam="h">Atak ısı haritası</button></div>';
 if(md==="l"){el.innerHTML=h+paLeague();return;}
 if(md==="h"){el.innerHTML=h+paHeat();return;}
@@ -3523,6 +3529,7 @@ el.innerHTML=h;}
 var root=$("hs-pa");
 root.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;var a;
 if((a=b.getAttribute("data-pam"))){PA.mode=a;if(a==="t"&&PA.b.t===PA.a.t)PA.b.t="";paRender();return;}
+if(b.getAttribute("data-hmback")){PA.solo=false;app.hs="sheets";homeRender();save();return;}
 if((a=b.getAttribute("data-hmc"))){if(a==="ALL")PA.hm.cb={};else if(PA.hm.cb[a])delete PA.hm.cb[a];else PA.hm.cb[a]=1;paRender();return;}
 if((a=b.getAttribute("data-hme"))){if(a==="ALL")PA.hm.ev={};else if(PA.hm.ev[a])delete PA.hm.ev[a];else PA.hm.ev[a]=1;paRender();return;}
 if((a=b.getAttribute("data-hmsp"))!==null){PA.hm.sp=a;paRender();return;}
@@ -4824,7 +4831,7 @@ var h=b.getAttribute("data-hs"),o=b.getAttribute("data-open"),r=b.getAttribute("
 if(ap){plOpen(ap);}
 else if(tm){app.tm=tm;homeRender();save();}
 else if(ac!==null){var nc=newClub(ac);app.teams.push(nc);app.tm=nc.id;save();homeRender();}
-else if(h){app.hs=h;homeRender();save();if(h==="video")yResume();if(h==="convert")cvOpen();}
+else if(h){PA.solo=false;app.hs=h;homeRender();save();if(h==="video")yResume();if(h==="convert")cvOpen();}
 else if(o)openTeam(o);
 else if(r)delTeam(r);
 });
