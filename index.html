@@ -3219,7 +3219,7 @@ function rawGet(id,cb){rawDb(function(db){if(!db)return cb(null);try{var r=db.tr
 function rawDel(id){rawDb(function(db){if(!db)return;try{db.transaction("f","readwrite").objectStore("f").delete(id);}catch(e){}});}
 function rawKeep(out){out.forEach(function(o){if(!o||o.err||!o.raw)return;var it=libItems().filter(function(x){return x.name===o.name;})[0];if(it){it.raw=1;rawPut(it.id,o.name,o.raw);}});}
 /* ---- PLAYER ANALYSIS ---- */
-var PA={mode:"p",a:{t:"",no:""},b:{t:"",no:""},ms:{},met:"aeff",ph:"",h2h:false,lmet:"aeff"},PAX=null,PACA="#14659f",PACB="#d9730d";
+var PA={mode:"p",a:{t:"",no:""},b:{t:"",no:""},ms:{},met:"aeff",ph:"",h2h:false,lmet:"aeff",hm:{no:"",cb:{},ev:{},sp:"cb",dir:false}},PAX=null,PACA="#14659f",PACB="#d9730d";
 function paIndex(){
 var L=libItems().filter(function(x){return x.ac;}),sig=L.map(function(x){return x.id+":"+x.ac.length;}).join("|");
 if(PAX&&PAX.sig===sig)return PAX;
@@ -3357,12 +3357,88 @@ h+='<div class="pag"><div class="pac"><h3>Sideout %</h3>'+paRank(paMet("so"),L)+
 h+='<h2 class="hsub">Tüm takımlar tablosu</h2><div class="tw"><table class="rvt"><thead><tr><th>Takım</th><th>Maç</th><th>Set</th>'+cols.map(function(k){return '<th>'+paMet(k)[1]+'</th>';}).join("")+'</tr></thead><tbody>';
 L.slice().sort(function(a,b){return (paMet("so")[2](b.o)||0)-(paMet("so")[2](a.o)||0);}).forEach(function(t){h+='<tr><th>'+esc(t.name)+'</th><td>'+t.o.nm+'</td><td>'+t.o.ns+'</td>'+cols.map(function(k){var q=paMet(k);return '<td>'+paFmt(q[2](t.o),q[3])+'</td>';}).join("")+'</tr>';});
 return h+'</tbody></table></div><p class="lbl" style="margin-top:10px;font-size:12px">Yüklü tüm scoutlar kullanılır. Sideout %: servis karşılarken kazanılan ralliler. Break point %: servis atarken kazanılan ralliler. Maç sayısı az olan takımların değerleri tek maça dayanır.</p>';}
+/* ---- Atak ısı haritası ---- */
+var HMX={},HMP=0; /* HMX[id]={s:ac metni, ax:ek alanlar ya da null}; ham dosyalar IndexedDB'den okunur */
+function hmLoad(items){
+var need=items.filter(function(x){var c=HMX[x.id];return !c||c.s!==x.ac;});
+if(!need.length)return true;
+if(HMP)return false;
+HMP=need.length;
+need.forEach(function(x){
+rawGet(x.id,function(r){var ax=null;
+if(r&&r.buf){try{var o=rvParse(r.buf,r.name||x.name);if(o&&o.ax&&o.ac&&o.ac.split("\n").length===x.ac.split("\n").length)ax=o.ax;}catch(e){}}
+HMX[x.id]={s:x.ac,ax:ax};if(--HMP===0)setTimeout(paRender,0);});});
+return false;}
+function hmList(items,ti){
+var out=[];
+items.forEach(function(x){var A=sdActs(x),ax=(HMX[x.id]||{}).ax,me=ti[x.id];
+A.forEach(function(a,i){if(a.sk!=="A"||a.tm!==me)return;var e=ax?ax[i]:null;
+out.push({g:x.id+"|"+a.st+"|"+a.tm,no:a.no,cb:a.cb||"?",ev:a.ev,sz:a.sz||"",ez:a.ez||"",sb:e?e[0]:"",cs:e?e[1]:0,ce:e?e[2]:0});});});
+var P=hmPts(out);out.forEach(function(a,i){a.p=P[i];a.prec=!!(a.p&&(a.p.c||/[A-D]/.test(a.sb)));});
+return out;}
+function hmCol(t){var A=[255,214,74],B=[244,128,36],C=[196,30,36],u=t<0.5?t*2:(t-0.5)*2,x=t<0.5?A:B,y=t<0.5?B:C;return "rgb("+[0,1,2].map(function(i){return Math.round(x[i]+(y[i]-x[i])*u);}).join(",")+")";}
+function hmHeat(L){
+var G=24,cs=15,d=new Float32Array(G*G),any=false,mx=0,i;
+L.forEach(function(a){if(!a.p||!a.p.b)return;any=true;var b=a.p.b,sg=a.prec?38:58,k=1/(2*sg*sg);
+for(var r=0;r<G;r++){var y=440+r*cs+cs/2-b[1],yy=y*y;for(var c=0;c<G;c++){var x=160+c*cs+cs/2-b[0];d[r*G+c]+=Math.exp(-(x*x+yy)*k);}}});
+if(!any)return "";
+for(i=0;i<d.length;i++)if(d[i]>mx)mx=d[i];
+var h='<g clip-path="url(#hmclip)"><g filter="url(#hmblur)">';
+for(i=0;i<d.length;i++){var t=d[i]/mx;if(t<0.1)continue;h+='<rect x="'+(160+(i%G)*cs)+'" y="'+(440+Math.floor(i/G)*cs)+'" width="'+(cs+0.5)+'" height="'+(cs+0.5)+'" fill="'+hmCol(t)+'" fill-opacity="'+(0.2+0.65*t).toFixed(2)+'"/>';}
+return h+'</g></g>';}
+function hmCourt(L,dir,lab){
+var loc=L.filter(function(a){return a.p&&a.p.b;}),zc={},h='<svg viewBox="'+(dir?"140 60 400 760":"140 424 400 392")+'" role="img" aria-label="'+esc(lab)+' atak ısı haritası">';
+h+='<rect x="160" y="'+(dir?80:440)+'" width="360" height="'+(dir?720:360)+'" fill="var(--court)" stroke="var(--line)" stroke-width="2"/>'+hmHeat(L);
+[280,400].forEach(function(x){h+='<line x1="'+x+'" y1="'+(dir?80:440)+'" x2="'+x+'" y2="800" stroke="var(--line)"/>';});
+(dir?[200,680]:[680]).forEach(function(y){h+='<line x1="160" y1="'+y+'" x2="520" y2="'+y+'" stroke="var(--line)"/>';});
+(dir?[320,560]:[560]).forEach(function(y){h+='<line x1="160" y1="'+y+'" x2="520" y2="'+y+'" stroke="var(--line)" stroke-dasharray="6 5"/>';});
+h+='<line x1="148" y1="440" x2="532" y2="440" stroke="var(--text)" stroke-width="5"/>';
+if(dir){var thin=loc.length>60;loc.forEach(function(a){if(!a.p.a)return;var c=RC[a.ev]||"#888780",A=a.p.a,B=a.p.b;
+h+=(thin?'<line x1="'+A[0].toFixed(1)+'" y1="'+A[1].toFixed(1)+'" x2="'+B[0].toFixed(1)+'" y2="'+B[1].toFixed(1)+'" stroke="'+c+'" stroke-width="2" stroke-opacity="0.55" stroke-linecap="round"/>':rArrow(A,B,c,3,"H"))+'<circle cx="'+B[0].toFixed(1)+'" cy="'+B[1].toFixed(1)+'" r="'+(thin?3:4.5)+'" fill="'+c+'"><title>'+esc(a.no+" "+a.cb+" "+a.ev)+'</title></circle>';});}
+var inn=loc.filter(function(a){return !a.p.out;});inn.forEach(function(a){var z=zone(a.p.b);zc[z]=(zc[z]||0)+1;});
+[[500,[4,3,2]],[620,[7,8,9]],[740,[5,6,1]]].forEach(function(r){[220,340,460].forEach(function(x,i){var z=r[1][i],n=zc[z]||0;if(!n)return;
+h+='<text x="'+x+'" y="'+(r[0]+8)+'" text-anchor="middle" font-size="24" font-weight="700" style="fill:var(--text);stroke:var(--panel);stroke-width:5;paint-order:stroke;stroke-linejoin:round">%'+Math.round(n/inn.length*100)+'<title>Bölge '+z+': '+n+' atak</title></text>';});});
+return h+'</svg>';}
+function hmCard(L,lab,dir){
+var n=L.length,k=0,e=0;L.forEach(function(a){if(a.ev==="#")k++;if(a.ev==="="||a.ev==="/")e++;});
+var un=L.filter(function(a){return !a.p||!a.p.b;}).length;
+var ou=L.filter(function(a){return a.p&&a.p.out;}).length,nt=[];if(ou)nt.push(ou+" atak saha dışına düştü (yüzdelere katılmadı)");if(un)nt.push(un+" atağın bittiği yer scoutta yok");
+return '<div class="pac"><h3 style="margin-bottom:2px">'+esc(lab)+'</h3><p class="lbl" style="margin:0 0 8px;font-size:12px">'+n+' atak · sayı %'+rvF(rvPct(k,n))+' · verim %'+rvF(rvPct(k-e,n))+'</p>'+hmCourt(L,dir,lab)+(nt.length?'<p class="lbl" style="margin:6px 0 0;font-size:12px">'+nt.join(". ")+'.</p>':'')+'</div>';}
+function paHeat(){
+var I=paIndex(),TA=I.teams[PA.a.t],H=PA.hm;
+var all=I.items.filter(function(x){return TA.ids[x.id]!==undefined;}).sort(function(a,b){return (a.dt||"")<(b.dt||"")?-1:1;}),its=all.filter(function(x){return !rvOn(PA.ms)||PA.ms[x.id];});
+var h='<svg width="0" height="0" style="position:absolute;width:0;height:0;border:0;overflow:hidden" aria-hidden="true"><defs><filter id="hmblur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="7"/></filter><clipPath id="hmclip"><rect x="160" y="440" width="360" height="360"/></clipPath></defs></svg>';
+if(!hmLoad(its))return h+'<div class="empty">Scout dosyaları okunuyor...</div>';
+var L0=hmList(its,TA.ids),byNo={};L0.forEach(function(a){byNo[a.no]=(byNo[a.no]||0)+1;});
+if(H.no&&!byNo[H.no])H.no="";
+function pn(no){var q=TA.pl[no];return no+" "+((q&&q.name)||"");}
+h+='<div class="pasel"><div class="qbox"><b>Seçim</b><div class="row"><label class="lbl" for="paat">Takım</label><select id="paat">'+paTeams().map(function(T){return '<option value="'+esc(T.k)+'"'+(T.k===PA.a.t?" selected":"")+'>'+esc(T.name)+' ('+Object.keys(T.ids).length+' maç)</option>';}).join("")+'</select></div>';
+h+='<div class="row" style="margin-top:6px"><label class="lbl" for="hmno">Oyuncu</label><select id="hmno"><option value="">Tüm oyuncular ('+L0.length+' atak)</option>'+Object.keys(byNo).sort(function(a,b){return +a-+b;}).map(function(no){return '<option value="'+esc(no)+'"'+(no===H.no?" selected":"")+'>'+esc(pn(no))+' ('+byNo[no]+')</option>';}).join("")+'</select></div></div></div>';
+h+='<div class="row" style="margin-top:8px"><span class="lbl">Maçlar ('+esc(TA.name)+')</span><button class="rb2'+(!rvOn(PA.ms)?" on":"")+'" data-pams="ALL">Tümü</button>'+all.map(function(x){var ti=TA.ids[x.id],d=(x.dt||"").split("-");return '<button class="rb2'+(PA.ms[x.id]?" on":"")+'" data-pams="'+x.id+'">'+esc((x.teams[1-ti]||"?").slice(0,18))+(d.length===3?" "+d[2]+"."+d[1]:"")+'</button>';}).join("")+'</div>';
+var L1=L0.filter(function(a){return !H.no||a.no===H.no;}),cc={};L1.forEach(function(a){cc[a.cb]=(cc[a.cb]||0)+1;});
+var codes=Object.keys(cc).sort(function(a,b){return cc[b]-cc[a]||(a<b?-1:1);});
+Object.keys(H.cb).forEach(function(k){if(!cc[k])delete H.cb[k];});
+h+='<div class="row" style="margin-top:8px"><span class="lbl">Atak kodu</span><button class="rb2'+(!rvOn(H.cb)?" on":"")+'" data-hmc="ALL">Tümü</button>'+codes.map(function(k){return '<button class="rb2'+(H.cb[k]?" on":"")+'" data-hmc="'+esc(k)+'">'+esc(k)+' <small>'+cc[k]+'</small></button>';}).join("")+'</div>';
+h+='<div class="row" style="margin-top:8px"><span class="lbl">Sonuç</span><button class="rb2'+(!rvOn(H.ev)?" on":"")+'" data-hme="ALL">Tümü</button>'+RVE.map(function(e){return '<button class="rb2'+(H.ev[e]?" on":"")+'" data-hme="'+e+'"><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+RC[e]+';margin-right:5px"></i>'+e+'</button>';}).join("")+'</div>';
+h+='<div class="row" style="margin-top:8px"><span class="lbl">Haritalar</span>'+[["","Tek harita"],["cb","Kod başına ayrı"],["no","Oyuncu başına ayrı"]].map(function(q){return '<button class="rb2'+(H.sp===q[0]?" on":"")+'" data-hmsp="'+q[0]+'">'+q[1]+'</button>';}).join("")+'<button class="rb2'+(H.dir?" on":"")+'" data-hmdir="1" style="margin-left:12px">Yönleri çiz</button></div>';
+var L=L1.filter(function(a){return (!rvOn(H.cb)||H.cb[a.cb])&&(!rvOn(H.ev)||H.ev[a.ev]);});
+if(!L.length)return h+'<div class="empty" style="margin-top:10px">Bu seçimde atak yok.</div>';
+var who=H.no?pn(H.no):TA.name,gs=[];
+if(!H.sp)gs=[{lab:who+(rvOn(H.cb)?" · "+Object.keys(H.cb).join(", "):""),L:L}];
+else{var m={};L.forEach(function(a){var k=a[H.sp];(m[k]=m[k]||[]).push(a);});gs=Object.keys(m).map(function(k){return {lab:H.sp==="cb"?k+(H.no?"":" · "+TA.name):pn(k),L:m[k]};}).sort(function(a,b){return b.L.length-a.L.length;});}
+var more=gs.length>16?gs.length-16:0;gs=gs.slice(0,16);
+h+='<div class="paleg" style="margin-top:10px"><span>Yoğunluk: az <i style="width:70px;background:linear-gradient(90deg,'+hmCol(0)+','+hmCol(0.5)+','+hmCol(1)+')"></i> çok</span><span>Yüzdeler: atağın bittiği bölgenin payı</span>'+(H.dir?RVE.map(function(e){return '<span><i style="background:'+RC[e]+'"></i>'+e+'</span>';}).join(""):'')+'</div>';
+h+='<div class="pag" style="grid-template-columns:repeat(auto-fill,minmax('+(gs.length>1?230:300)+'px,'+(gs.length>1?"1fr":"460px")+'))">'+gs.map(function(g){return hmCard(g.L,g.lab,H.dir);}).join("")+'</div>';
+var nc=L.filter(function(a){return a.p&&a.p.c;}).length,nz=L.filter(function(a){return a.p&&a.p.b&&!a.p.c;}).length,old=its.filter(function(x){return !(HMX[x.id]||{}).ax;}).length;
+h+='<p class="lbl" style="margin-top:10px;font-size:12px">'+(more?'En çok atak içeren 16 harita gösteriliyor, '+more+' tanesi gizlendi; kod ya da oyuncu seçerek daralt. ':'')+'Konum: '+nc+' atak scouttaki koordinattan, '+nz+' atak bölge ve alt bölge numarasından (Rotation Detail ile aynı bölge yöntemi). Her haritanın renk ölçeği kendi içindedir.'+(old?' '+old+' maçın scout dosyası bu cihazda saklı değil; o maçlarda yalnızca bölge numarası kullanıldı. SCOUTLAR bölümünden dosyayı yeniden yüklersen koordinatlar da gelir.':'')+'</p>';
+return h;}
 function paRender(){
 var el=$("pa-body");if(!el)return;
 if(!paFix()){el.innerHTML='<div class="empty">Analiz için önce SCOUTLAR bölümünden scout yükle. Eski sürümle yüklenmiş scoutlarda aksiyon verisi yoktur; aynı dosyayı bir kez yeniden yüklemen yeterli.</div>';return;}
 var I=paIndex(),md=PA.mode,team=md==="t";
-var h='<div class="row"><button class="rb2'+(md==="p"?" on":"")+'" data-pam="p">Oyuncu</button><button class="rb2'+(md==="c"?" on":"")+'" data-pam="c">İki oyuncu kıyasla</button><button class="rb2'+(md==="t"?" on":"")+'" data-pam="t">Takım kıyasla</button><button class="rb2'+(md==="l"?" on":"")+'" data-pam="l">Tüm takımlar</button></div>';
+var h='<div class="row"><button class="rb2'+(md==="p"?" on":"")+'" data-pam="p">Oyuncu</button><button class="rb2'+(md==="c"?" on":"")+'" data-pam="c">İki oyuncu kıyasla</button><button class="rb2'+(md==="t"?" on":"")+'" data-pam="t">Takım kıyasla</button><button class="rb2'+(md==="l"?" on":"")+'" data-pam="l">Tüm takımlar</button><button class="rb2'+(md==="h"?" on":"")+'" data-pam="h">Atak ısı haritası</button></div>';
 if(md==="l"){el.innerHTML=h+paLeague();return;}
+if(md==="h"){el.innerHTML=h+paHeat();return;}
 h+='<div class="pasel">'+paSideH("a",md==="p"?"Seçim":(team?"Takım A":"Oyuncu A"),PACA,team,false)+(md!=="p"?paSideH("b",team?"Takım B":"Oyuncu B",PACB,team,team):'')+'</div>';
 var TA=I.teams[PA.a.t],its=I.items.filter(function(x){return TA.ids[x.id]!==undefined;}).sort(function(a,b){return (a.dt||"")<(b.dt||"")?-1:1;});
 var hh=paH2H(),canH=team&&PA.b.t&&PA.b.t!==PA.a.t;
@@ -3390,13 +3466,17 @@ el.innerHTML=h;}
 var root=$("hs-pa");
 root.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;var a;
 if((a=b.getAttribute("data-pam"))){PA.mode=a;if(a==="t"&&PA.b.t===PA.a.t)PA.b.t="";paRender();return;}
+if((a=b.getAttribute("data-hmc"))){if(a==="ALL")PA.hm.cb={};else if(PA.hm.cb[a])delete PA.hm.cb[a];else PA.hm.cb[a]=1;paRender();return;}
+if((a=b.getAttribute("data-hme"))){if(a==="ALL")PA.hm.ev={};else if(PA.hm.ev[a])delete PA.hm.ev[a];else PA.hm.ev[a]=1;paRender();return;}
+if((a=b.getAttribute("data-hmsp"))!==null){PA.hm.sp=a;paRender();return;}
+if(b.getAttribute("data-hmdir")){PA.hm.dir=!PA.hm.dir;paRender();return;}
 if((a=b.getAttribute("data-paph"))!==null){PA.ph=a;paRender();return;}
 if(b.getAttribute("data-pah2h")){PA.h2h=!PA.h2h;paRender();return;}
 if((a=b.getAttribute("data-pams"))){if(a==="ALL")PA.ms={};else{if(PA.ms[a])delete PA.ms[a];else PA.ms[a]=1;}paRender();return;}
 });
 root.addEventListener("change",function(e){var t=e.target;
 if(t.id==="paat"){PA.a.t=t.value;PA.a.no="";PA.ms={};}else if(t.id==="pabt"){PA.b.t=t.value;PA.b.no="";}
-else if(t.id==="paap")PA.a.no=t.value;else if(t.id==="pabp")PA.b.no=t.value;else if(t.id==="pamet")PA.met=t.value;else if(t.id==="palmet")PA.lmet=t.value;else return;
+else if(t.id==="paap")PA.a.no=t.value;else if(t.id==="pabp")PA.b.no=t.value;else if(t.id==="pamet")PA.met=t.value;else if(t.id==="palmet")PA.lmet=t.value;else if(t.id==="hmno")PA.hm.no=t.value;else return;
 paRender();});
 })();
 var CC={id:null,msg:""};
@@ -3597,11 +3677,11 @@ if(p.skill==="S")pv=p;
 if(p.skill==="R"&&RVE.indexOf(p.effect)>=0){R[p.team==="*"?0:1].push({no:String(+p.player),ev:p.effect,lo:"U",sz:p.startZone?String(p.startZone):"",ez:p.endZone?String(p.endZone):"",st:String((pv&&pv.hitType)||p.hitType||"")});}
 });});});
 if(!j.startDate&&!dt)dt="";else if(j.startDate&&!dt)dt=String(j.startDate).slice(0,10);
-var AC=[];((j.scout&&j.scout.sets)||[]).forEach(function(st,si){var hs=0,as=0;(st.events||[]).forEach(function(e){if(e.exchange)(e.exchange.plays||[]).forEach(function(p){
+var AC=[],AX=[];((j.scout&&j.scout.sets)||[]).forEach(function(st,si){var hs=0,as=0;(st.events||[]).forEach(function(e){if(e.exchange)(e.exchange.plays||[]).forEach(function(p){
 if("SREABDF".indexOf(p.skill)<0||!p.skill||RVE.indexOf(p.effect)<0)return;
-AC.push([p.team==="*"?0:1,+p.player||0,p.skill,String(p.hitType||""),p.effect,String(p.combination||"").replace(/[,\n]/g,""),p.startZone||"",p.endZone||"",si+1,p.time!=null?Math.round(p.time/10):"",hs,as].join(","));});
+AC.push([p.team==="*"?0:1,+p.player||0,p.skill,String(p.hitType||""),p.effect,String(p.combination||"").replace(/[,\n]/g,""),p.startZone||"",p.endZone||"",si+1,p.time!=null?Math.round(p.time/10):"",hs,as].join(","));AX.push([/^[A-D]$/.test(p.endSubZone||"")?p.endSubZone:"",0,0]);});
 if(e.score){hs=+e.score.home||0;as=+e.score.away||0;}});});
-return {name:fname,teams:[String(H.name||"").trim(),String(A.name||"").trim()],pls:[pl(H),pl(A)],R:R,dt:dt,noloc:true,ac:AC.join("\n"),vid:"",cmb:(function(){var o={};(j.attackCombinations||[]).forEach(function(c){if(c&&c.code)o[c.code]=String(c.hitType||"");});return o;})()};
+return {name:fname,teams:[String(H.name||"").trim(),String(A.name||"").trim()],pls:[pl(H),pl(A)],R:R,dt:dt,noloc:true,ac:AC.join("\n"),ax:AX,vid:"",cmb:(function(){var o={};(j.attackCombinations||[]).forEach(function(c){if(c&&c.code)o[c.code]=String(c.hitType||"");});return o;})()};
 }
 var S={},cur=null;
 tx.split(/\r?\n/).forEach(function(l){var m=l.match(/^\[3?([A-Z0-9\-]+)\]/);if(m){cur=m[1];S[cur]=[];}else if(cur&&l.trim())S[cur].push(l);});
@@ -3613,15 +3693,16 @@ S.SCOUT.forEach(function(l){var c=(l.split(";")[0]||""),m=/^([*a])(\d\d)R/.exec(
 var ev=c.charAt(5),lo=c.charAt(12);if(RVE.indexOf(ev)<0)return;if(RVL.indexOf(lo)<0)lo="U";
 var z=function(ch){return /[1-9]/.test(ch)?ch:"";};
 R2[m[1]==="*"?0:1].push({no:String(+m[2]),ev:ev,lo:lo,sz:z(c.charAt(9)),ez:z(c.charAt(10)),st:/[A-Z]/.test(c.charAt(4))?c.charAt(4):""});});
-var AC=[],hs=0,as=0,cs="";
+var AC=[],AX=[],hs=0,as=0,cs="";
 S.SCOUT.forEach(function(l){var f=l.split(";"),c=f[0]||"",pm=/^[*a]p(\d+):(\d+)/.exec(c);
 if(f[8]&&f[8]!==cs){cs=f[8];hs=0;as=0;}
 if(pm){hs=+pm[1];as=+pm[2];return;}
 var m=/^([*a])(\d\d)([SREABDF])([A-Z])([#+!\-\/=])/.exec(c);if(!m)return;
 var cb=c.slice(6,8).replace(/~/g,""),zz=function(ch){return /[1-9]/.test(ch||"")?ch:"";};
-AC.push([m[1]==="*"?0:1,+m[2],m[3],m[4],m[5],cb.replace(/[,\n]/g,""),zz(c.charAt(9)),zz(c.charAt(10)),f[8]||"",/^\d+$/.test(f[12]||"")?f[12]:"",hs,as].join(","));});
+AC.push([m[1]==="*"?0:1,+m[2],m[3],m[4],m[5],cb.replace(/[,\n]/g,""),zz(c.charAt(9)),zz(c.charAt(10)),f[8]||"",/^\d+$/.test(f[12]||"")?f[12]:"",hs,as].join(","));
+var xc=function(v){v=(v||"").trim();return /^\d{3,4}$/.test(v)?parseInt(v,10):0;};AX.push([/[A-D]/.test(c.charAt(11))?c.charAt(11):"",xc(f[4]),xc(f[6])]);});
 var vd="";(S.VIDEO||[]).forEach(function(l){var q=l.split("=");if(q[1]&&!vd)vd=q.slice(1).join("=").replace(/^.*[\\\/]/,"").trim();});
-return {name:fname,teams:teams,pls:pls,R:R2,dt:dt,ac:AC.join("\n"),vid:vd,cmb:(function(){var o={};(S.ATTACKCOMBINATION||[]).forEach(function(l){var q=l.split(";");if(/^[A-Z0-9]{2}$/.test(q[0]||""))o[q[0]]=String(q[3]||"");});return o;})()};
+return {name:fname,teams:teams,pls:pls,R:R2,dt:dt,ac:AC.join("\n"),ax:AX,vid:vd,cmb:(function(){var o={};(S.ATTACKCOMBINATION||[]).forEach(function(l){var q=l.split(";");if(/^[A-Z0-9]{2}$/.test(q[0]||""))o[q[0]]=String(q[3]||"");});return o;})()};
 }
 function rvApply(files,tn){
 var d=RV.d,add=0,msg=[];
@@ -4100,6 +4181,22 @@ und.add.forEach(function(x){var A=R.d.p[x[0]].atk,i=A.indexOf(x[1]);if(i>=0)A.sp
 (und.pp||[]).forEach(function(x){var PP=R.d.p[x[0]];if(PP.pp)PP.pp[x[1]]=Math.max(0,(+PP.pp[x[1]]||0)-1);});
 (und.keys||[]).forEach(function(k){if(R.d.dvk)delete R.d.dvk[k];});
 msg((und.add.length+(und.pp||[]).length)+" aktarılan atak geri alındı");und=null;$("dvu").hidden=true;save();rp=null;rotRender();
+};
+/* Isı haritası için: her atağın başlangıç (a) ve bitiş (b) noktası. Koordinat varsa koordinat, yoksa Rotation Detail'deki gibi bölge ve alt bölge (byZone). g = maç+set+takım; koordinatın yönü grup başına bulunur.
+DataVolley koordinat ızgarası (100x100) sahadan büyüktür: saha, ızgaranın yatayda %10-%90, dikeyde %6-%94 arasındadır. xyM bunu hesaba katar, bu yüzden saha dışına düşen toplar da doğru yerde çıkar. */
+function xyM(i,v){var c=(i-1)%100,r=Math.floor((i-1)/100),A=(c/99-0.1)/0.8,B=(r/99-0.0598)/0.8804,u=(v&1)?B:A,w=(v&1)?A:B;if(v&2)u=1-u;if(v&4)w=1-w;return [160+u*360,800-w*720];}
+function scoreM(L,v){var n=0,ok=0;L.forEach(function(a){if(!a.cs||!a.ce||!/[1-9]/.test(a.ez))return;var s=xyM(a.cs,v),e=xyM(a.ce,v);n++;var g=(s[1]<440&&e[1]>=440)?1:0;if(g&&+a.ez===zone(e))g+=1;if(g&&/[1-9]/.test(a.sz)&&+a.sz===ozone(s))g+=1;ok+=g/3;});return n?ok/n:0;}
+window.hmPts=function(L){
+var SV={},grp={};L.forEach(function(a){(grp[a.g]=grp[a.g]||[]).push(a);});
+Object.keys(grp).forEach(function(g){var bv=0,bs=-1;for(var v=0;v<8;v++){var sc=scoreM(grp[g],v);if(sc>bs){bs=sc;bv=v;}}SV[g]={v:bv,ok:bs>=0.7};});
+return L.map(function(a){
+var sv=SV[a.g];
+if(sv&&sv.ok&&a.cs&&a.ce){var s=xyM(a.cs,sv.v),e=xyM(a.ce,sv.v);if(s[1]<440&&e[1]>=440)return {a:s,b:e,c:true,out:e[0]<160||e[0]>520||e[1]>800};}
+var p=byZone(a);
+if(!p&&/[1-9]/.test(a.ez)){var q=byZone({cb:a.cb,sz:"3",ez:a.ez,sb:a.sb});if(q)p={a:null,b:q.b};}
+if(!p)return null;
+if(STARTC[a.cb])p.a=STARTC[a.cb].slice();else if(COMBO[a.cb]&&START[COMBO[a.cb]])p.a=START[COMBO[a.cb]].slice();
+return {a:p.a,b:p.b,c:false,out:false};});
 };
 })();
 /* ---- Cihazlar arası eşitleme (yayınlanmış sayfada, kullanıcıya özel veritabanı) ---- */
